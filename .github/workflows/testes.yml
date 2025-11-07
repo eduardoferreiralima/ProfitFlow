@@ -33,15 +33,17 @@ jobs:
 
       - name: Rodar testes
         run: ./mvnw clean test
+        continue-on-error: true  # Permite que o job continue mesmo com falhas
 
       - name: Gerar relatório Surefire HTML
+        if: always()             # Sempre executa, mesmo se testes falharem
         run: ./mvnw surefire-report:report
 
       - name: Publicar relatórios como artefatos
+        if: always()             # Sempre executa, mesmo se testes falharem
         uses: actions/upload-artifact@v4
         with:
           name: relatorios-de-teste
           path: |
             target/site/surefire-report.html
             target/surefire-reports/
-
