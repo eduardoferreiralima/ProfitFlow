@@ -44,8 +44,8 @@ public class OpenApiConfig {
                         new Tag().name("Receitas").description("Operações relacionadas a Receitas"),
                         new Tag().name("Despesas").description("Operações relacionadas a Despesas"),
                         new Tag().name("Contas").description("Operações relacionadas a Contas"),
-                        new Tag().name("Cliente").description("Operações relacionadas a Contas"),
-                        new Tag().name("Fornecedor").description("Operações relacionadas a Contas")
+                        new Tag().name("Pessoas").description("Operações relacionadas a Clientes e Fornecedores"),
+                        new Tag().name("Fornecedor").description("Operações relacionadas a Fornecedores")
 
                 ))
                 .externalDocs(new ExternalDocumentation()
