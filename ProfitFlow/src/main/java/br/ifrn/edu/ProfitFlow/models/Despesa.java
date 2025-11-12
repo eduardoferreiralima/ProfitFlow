@@ -32,5 +32,5 @@ public class Despesa {
 
     @ManyToOne
     @JoinColumn(name = "fornecedor_id")
-    private Fornecedor cliente;
+    private ClienteFornecedor fornecedor;
 }

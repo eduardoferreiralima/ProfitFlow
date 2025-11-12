@@ -4,6 +4,8 @@ import br.ifrn.edu.ProfitFlow.models.enums.UsuarioRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,8 +19,11 @@ public class Usuario {
     private int  id;
 
     @NotBlank(message = "Nome é obrigatório")
+    @Size(min = 5, max = 80, message = "O nome deve ter entre 5 e 80 caracteres")
     private String nome;
 
+    @Email(message = "Formato de email inválido")
+    @NotEmpty(message = "O E-mail é obrigatório!")
     private String email;
 
     private String senha;

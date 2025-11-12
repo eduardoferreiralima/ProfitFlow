@@ -41,11 +41,11 @@ public class OpenApiConfig {
                                 .description("Servidor Local de Desenvolvimento")
                 ))
                 .tags(List.of(
-                        new Tag().name("Receitas").description("Operações relacionadas a Receitas"),
-                        new Tag().name("Despesas").description("Operações relacionadas a Despesas"),
-                        new Tag().name("Contas").description("Operações relacionadas a Contas"),
+                        new Tag().name("Auth").description("Operações relacionadas a Autenticação"),
+                        new Tag().name("Financeiro").description("Operações relacionadas a Receitas e Despesas"),
+                        new Tag().name("Contas").description("Operações relacionadas a Contas a pagar e a receber"),
                         new Tag().name("Pessoas").description("Operações relacionadas a Clientes e Fornecedores"),
-                        new Tag().name("Fornecedor").description("Operações relacionadas a Fornecedores")
+                        new Tag().name("Relatorios").description("Operações relacionadas a Relatorios")
 
                 ))
                 .externalDocs(new ExternalDocumentation()

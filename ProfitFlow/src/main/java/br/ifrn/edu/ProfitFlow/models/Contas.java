@@ -34,10 +34,7 @@ public class Contas {
     private ContaStatus status;
 
     @ManyToOne
-    @JoinColumn(name = "cliente_id")
-    private Cliente cliente;
+    @JoinColumn(name = "cliente_fornecedor_id")
+    private ClienteFornecedor clienteFornecedor;
 
-    @ManyToOne
-    @JoinColumn(name = "fornecedor_id")
-    private Fornecedor fornecedor;
 }

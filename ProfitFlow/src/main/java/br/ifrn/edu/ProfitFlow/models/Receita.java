@@ -31,5 +31,5 @@ public class Receita {
 
     @ManyToOne
     @JoinColumn(name = "cliente_id")
-    private Cliente cliente;
+    private ClienteFornecedor cliente;
 }
