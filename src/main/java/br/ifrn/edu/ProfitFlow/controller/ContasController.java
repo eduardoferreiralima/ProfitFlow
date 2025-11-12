@@ -1,6 +1,7 @@
 package br.ifrn.edu.ProfitFlow.controller;
 
 
+import br.ifrn.edu.ProfitFlow.config.docs.ContasControllerDocs;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,8 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/financeiro")
-@Tag(name = "Contas")
-public class ContasController {
+public class ContasController implements ContasControllerDocs {
 
     @GetMapping
     public ResponseEntity<?> getContas(){
@@ -51,6 +51,8 @@ public class ContasController {
         return ResponseEntity.ok().build();
     }
 
-
-
+    @GetMapping("/tipo")
+    public ResponseEntity<?> getContasPorTipo(String tipo) {
+        return null;
+    }
 }

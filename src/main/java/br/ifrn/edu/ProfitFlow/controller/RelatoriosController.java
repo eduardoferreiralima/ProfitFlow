@@ -1,5 +1,6 @@
 package br.ifrn.edu.ProfitFlow.controller;
 
+import br.ifrn.edu.ProfitFlow.config.docs.RelatoriosControllerDocs;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,8 +10,7 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/relatorios")
-@Tag(name = "Relatorios")
-public class RelatoriosController {
+public class RelatoriosController implements RelatoriosControllerDocs {
 
     @GetMapping("/fluxo-caixa")
     public ResponseEntity<?> getFluxoCaixa(@RequestParam LocalDate inicio, @RequestParam LocalDate fim){

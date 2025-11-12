@@ -18,6 +18,7 @@ public class ResponsePessoaDTO {
     private String cpfCnpj;
     private String telefone;
     private String endereco;
+
     @Enumerated(EnumType.STRING)
     private PessoaTipo pessoa;
 

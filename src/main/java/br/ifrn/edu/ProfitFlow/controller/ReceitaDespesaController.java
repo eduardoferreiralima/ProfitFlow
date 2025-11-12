@@ -1,5 +1,6 @@
 package br.ifrn.edu.ProfitFlow.controller;
 
+import br.ifrn.edu.ProfitFlow.config.docs.ReceitaDespesaControllerDocs;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,8 +10,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/transacoes")
-@Tag(name = "Financeiro")
-public class ReceitaDespesaController {
+public class ReceitaDespesaController implements ReceitaDespesaControllerDocs {
 
     @GetMapping
     public ResponseEntity<?> getPendentes(){
@@ -27,7 +27,7 @@ public class ReceitaDespesaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateTransaction(){
+    public ResponseEntity<?> updateTransaction(@PathVariable Integer id){
         return ResponseEntity.ok().build();
     }
 

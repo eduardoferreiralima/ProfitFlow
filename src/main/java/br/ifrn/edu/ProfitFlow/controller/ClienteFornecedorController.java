@@ -1,6 +1,7 @@
 package br.ifrn.edu.ProfitFlow.controller;
 
 
+import br.ifrn.edu.ProfitFlow.config.docs.PessoaControllerDocs;
 import br.ifrn.edu.ProfitFlow.dto.request.RequestPessoaDTO;
 import br.ifrn.edu.ProfitFlow.dto.response.ResponsePessoaDTO;
 import br.ifrn.edu.ProfitFlow.models.ClienteFornecedor;
@@ -17,8 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/pessoas")
-@Tag(name = "Pessoas")
-public class ClienteFornecedorController {
+public class ClienteFornecedorController implements PessoaControllerDocs {
 
     @Autowired
     private ClienteFornecedorService clienteFornecedorService;
@@ -35,7 +35,7 @@ public class ClienteFornecedorController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponsePessoaDTO> save(@Valid @RequestBody RequestPessoaDTO pessoaDTO){
+    public ResponseEntity<ResponsePessoaDTO> save(@Valid @RequestBody RequestPessoaDTO pessoaDTO) throws Exception {
         return ResponseEntity.status(HttpStatus.CREATED).body(clienteFornecedorService.salvar(pessoaDTO));
     }
 

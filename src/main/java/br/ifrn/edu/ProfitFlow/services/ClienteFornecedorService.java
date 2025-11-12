@@ -5,6 +5,7 @@ import br.ifrn.edu.ProfitFlow.dto.request.RequestPessoaDTO;
 import br.ifrn.edu.ProfitFlow.dto.response.ResponsePessoaDTO;
 import br.ifrn.edu.ProfitFlow.models.ClienteFornecedor;
 import br.ifrn.edu.ProfitFlow.models.Usuario;
+import br.ifrn.edu.ProfitFlow.models.enums.PessoaTipo;
 import br.ifrn.edu.ProfitFlow.models.enums.UsuarioRole;
 import br.ifrn.edu.ProfitFlow.repository.ClienteFornecedorRepository;
 import br.ifrn.edu.ProfitFlow.repository.UsuarioRepository;
@@ -12,7 +13,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +26,6 @@ public class ClienteFornecedorService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-
     public List<ClienteFornecedor> findAll(){
         return clienteFornecedorRepository.findAll();
     }
@@ -36,7 +35,11 @@ public class ClienteFornecedorService {
     }
 
     @Transactional
-    public ResponsePessoaDTO salvar(RequestPessoaDTO pessoa){
+    public ResponsePessoaDTO salvar(RequestPessoaDTO pessoa) throws Exception {
+
+        if (pessoa.getPessoa() != PessoaTipo.CLIENTE && pessoa.getPessoa() != PessoaTipo.FORNECEDOR) {
+            throw new IllegalArgumentException("Tipo de Pessoa Inválido! Use CLIENTE ou FORNECEDOR");
+        }
 
         Usuario usuario = new Usuario();
         usuario.setNome(pessoa.getNome());

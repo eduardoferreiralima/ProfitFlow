@@ -1,6 +1,6 @@
 package br.ifrn.edu.ProfitFlow.models;
 
-import br.ifrn.edu.ProfitFlow.annotations.CpfOuCnpj;
+
 import br.ifrn.edu.ProfitFlow.models.enums.PessoaTipo;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
@@ -16,6 +16,7 @@ public class ClienteFornecedor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
 
     @Column(unique = true)
     private String cpfCnpj;
