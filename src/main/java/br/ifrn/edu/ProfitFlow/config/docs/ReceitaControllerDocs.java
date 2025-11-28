@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDate;
 
 @Tag(name = "Financeiro", description = "Operações relacionadas a receitas e despesas")
-public interface ReceitaDespesaControllerDocs {
+public interface ReceitaControllerDocs {
 
     @Operation(summary = "Lista todas as transações (receitas e despesas)")
     @ApiResponses({
@@ -29,7 +29,7 @@ public interface ReceitaDespesaControllerDocs {
             @ApiResponse(responseCode = "201", description = "Transação criada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos")
     })
-    ResponseEntity<?> createTransaction();
+    ResponseEntity<?> createReceita();
 
     @Operation(summary = "Atualiza uma transação existente")
     @ApiResponses({
@@ -37,14 +37,14 @@ public interface ReceitaDespesaControllerDocs {
             @ApiResponse(responseCode = "400", description = "Dados inválidos"),
             @ApiResponse(responseCode = "404", description = "Transação não encontrada")
     })
-    ResponseEntity<?> updateTransaction(Integer id);
+    ResponseEntity<?> updateReceita(Integer id);
 
     @Operation(summary = "Remove uma transação")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Transação removida com sucesso"),
             @ApiResponse(responseCode = "404", description = "Transação não encontrada")
     })
-    ResponseEntity<?> deleteTransaction(Integer id);
+    ResponseEntity<?> deleteReceita(Integer id);
 
     @Operation(summary = "Filtra transações por período")
     @ApiResponses({

@@ -1,11 +1,15 @@
 package br.ifrn.edu.ProfitFlow.config.docs;
 
+import br.ifrn.edu.ProfitFlow.dto.request.RequestContaDTO;
+import br.ifrn.edu.ProfitFlow.dto.response.ResponseContaDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+
+import java.util.List;
 
 @Tag(name = "Contas", description = "Operações relacionadas a Contas a Pagar e Receber")
 public interface ContasControllerDocs {
@@ -14,7 +18,7 @@ public interface ContasControllerDocs {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista de contas retornada com sucesso")
     })
-    ResponseEntity<?> getContas();
+    ResponseEntity<List<ResponseContaDTO>> getContas();
 
     @Operation(summary = "Retorna uma conta específica", description = "Busca uma conta pelo seu ID.")
     @ApiResponses({
@@ -23,14 +27,16 @@ public interface ContasControllerDocs {
     })
     ResponseEntity<?> getConta(
             @Parameter(description = "ID da conta", example = "1") Integer id
-    );
+    ) throws Exception;
 
     @Operation(summary = "Registra uma nova conta", description = "Cria uma nova conta (PAGAR ou RECEBER).")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Conta criada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos")
     })
-    ResponseEntity<?> createConta();
+    ResponseEntity<ResponseContaDTO> createConta(
+            @Parameter(description = "Dados relacionados a conta") RequestContaDTO conta
+    ) throws Exception;
 
     @Operation(summary = "Atualiza informações de uma conta", description = "Atualiza os dados de uma conta existente.")
     @ApiResponses({
@@ -38,9 +44,10 @@ public interface ContasControllerDocs {
             @ApiResponse(responseCode = "400", description = "Dados inválidos"),
             @ApiResponse(responseCode = "404", description = "Conta não encontrada")
     })
-    ResponseEntity<?> updateConta(
-            @Parameter(description = "ID da conta a ser atualizada", example = "1") Integer id
-    );
+    ResponseEntity<ResponseContaDTO> updateConta(
+            @Parameter(description = "ID da conta a ser atualizada", example = "1") Integer id,
+            @Parameter(description = "Dados relacionados a conta") RequestContaDTO conta
+    ) throws Exception;
 
     @Operation(summary = "Remove uma conta", description = "Exclui uma conta do sistema.")
     @ApiResponses({
@@ -59,7 +66,7 @@ public interface ContasControllerDocs {
     })
     ResponseEntity<?> updateQuitar(
             @Parameter(description = "ID da conta a ser quitada", example = "1") Integer id
-    );
+    ) throws Exception;
 
     @Operation(summary = "Lista todas as contas vencidas", description = "Retorna todas as contas que estão vencidas.")
     @ApiResponses({

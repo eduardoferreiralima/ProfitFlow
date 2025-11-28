@@ -1,7 +1,6 @@
 package br.ifrn.edu.ProfitFlow.controller;
 
-import br.ifrn.edu.ProfitFlow.config.docs.ReceitaDespesaControllerDocs;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import br.ifrn.edu.ProfitFlow.config.docs.ReceitaControllerDocs;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,29 +9,30 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/transacoes")
-public class ReceitaDespesaController implements ReceitaDespesaControllerDocs {
+public class ReceitaController implements ReceitaControllerDocs {
 
     @GetMapping
     public ResponseEntity<?> getPendentes(){
         return ResponseEntity.ok().build();
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getPendentes(@PathVariable Integer id){
         return ResponseEntity.ok().build();
     }
 
     @PostMapping
-    public ResponseEntity<?> createTransaction(){
+    public ResponseEntity<?> createReceita(){
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateTransaction(@PathVariable Integer id){
+    public ResponseEntity<?> updateReceita(@PathVariable Integer id){
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTransaction(@PathVariable Integer id){
+    public ResponseEntity<?> deleteReceita(@PathVariable Integer id){
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
