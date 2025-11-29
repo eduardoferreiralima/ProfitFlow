@@ -1,6 +1,5 @@
 package br.ifrn.edu.ProfitFlow.dto.request;
 
-import br.ifrn.edu.ProfitFlow.models.ClienteFornecedor;
 import br.ifrn.edu.ProfitFlow.models.enums.ContaStatus;
 import br.ifrn.edu.ProfitFlow.models.enums.ContaTipo;
 import lombok.Getter;
@@ -13,14 +12,12 @@ import java.time.LocalDate;
 public class RequestContaDTO {
 
     private String descricao;
-    private BigDecimal valor;
-
-    private LocalDate dataVencimento;
-    private LocalDate dataPagamento;
-
+    private String categoria;
     private ContaTipo tipo;
     private ContaStatus status;
-
-    private Integer clienteFornecedorId;
+    private BigDecimal valor;
+    private LocalDate dataPrevista;    // vencimento/prevista
+    private LocalDate dataPagamento;   // pagamento/recebimento
+    private Integer pessoaId;
 
 }

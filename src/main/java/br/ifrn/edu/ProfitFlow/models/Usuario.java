@@ -1,5 +1,7 @@
 package br.ifrn.edu.ProfitFlow.models;
 
+import br.ifrn.edu.ProfitFlow.annotations.PhoneIsValid;
+import br.ifrn.edu.ProfitFlow.models.enums.PessoaTipo;
 import br.ifrn.edu.ProfitFlow.models.enums.UsuarioRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -12,11 +14,12 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @Getter @Setter
-public class Usuario {
+public abstract class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int  id;
+    private Long  id;
 
     @NotBlank(message = "Nome é obrigatório")
     @Size(min = 5, max = 80, message = "O nome deve ter entre 5 e 80 caracteres")
@@ -28,10 +31,18 @@ public class Usuario {
 
     private String senha;
 
+    @PhoneIsValid
+    private String telefone;
+
+    private String endereco;
+
     @Enumerated(EnumType.STRING)
     private UsuarioRole role;
 
     private boolean ativo;
+
+    @Enumerated(EnumType.STRING)
+    private PessoaTipo pessoa;
 
     private LocalDateTime dataCadastro;
     private LocalDateTime dataAtualizacao;

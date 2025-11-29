@@ -7,11 +7,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Constraint(validatedBy = CPFouCNPJValidator.class)
+@Constraint(validatedBy = PhoneValidator.class)
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CPFouCNPJ {
-    String message() default "CPF ou CNPJ inválido!";
+public @interface PhoneIsValid {
+    String message() default "Telefone inválido!";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
+    String regex() default "^\\(?\\d{2}\\)? ?9?\\d{4}-?\\d{4}$";
 }

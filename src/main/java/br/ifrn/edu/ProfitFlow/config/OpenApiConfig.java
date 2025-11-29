@@ -1,6 +1,5 @@
 package br.ifrn.edu.ProfitFlow.config;
 
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
@@ -8,11 +7,18 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
-import org.springdoc.core.utils.SpringDocUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Configuration
 public class OpenApiConfig {
@@ -44,9 +50,8 @@ public class OpenApiConfig {
                 ))
                 .tags(List.of(
                         new Tag().name("Auth").description("Operações relacionadas a Autenticação"),
-                        new Tag().name("Pessoas").description("Operações relacionadas a Clientes e Fornecedores"),
                         new Tag().name("Contas").description("Operações relacionadas a Contas a pagar e a receber"),
-                        new Tag().name("Financeiro").description("Operações relacionadas a Receitas e Despesas"),
+                        new Tag().name("Importar Dados").description("Operações relacionadas a Importação de Dados Financeiros"),
                         new Tag().name("Relatorios").description("Operações relacionadas a Relatorios")
                 ))
                 .externalDocs(new ExternalDocumentation()
@@ -54,6 +59,22 @@ public class OpenApiConfig {
                         .url("https://github.com/eduardoferreiralima/ProfitFlow")
 
                 );
+    }
+
+    @RestControllerAdvice // Esta anotação habilita o tratamento global de exceções
+    public static class ValidationExceptionHandler {
+
+        @ResponseStatus(HttpStatus.BAD_REQUEST) // Garante que o status 400 seja retornado
+        @ExceptionHandler(MethodArgumentNotValidException.class)
+        public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
+            Map<String, String> errors = new HashMap<>();
+            ex.getBindingResult().getAllErrors().forEach((error) -> {
+                String fieldName = ((FieldError) error).getField();
+                String errorMessage = error.getDefaultMessage();
+                errors.put(fieldName, errorMessage);
+            });
+            return errors;
+        }
     }
 }
 

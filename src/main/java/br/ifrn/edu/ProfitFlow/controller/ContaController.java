@@ -4,7 +4,7 @@ package br.ifrn.edu.ProfitFlow.controller;
 import br.ifrn.edu.ProfitFlow.config.docs.ContasControllerDocs;
 import br.ifrn.edu.ProfitFlow.dto.request.RequestContaDTO;
 import br.ifrn.edu.ProfitFlow.dto.response.ResponseContaDTO;
-import br.ifrn.edu.ProfitFlow.services.ContasService;
+import br.ifrn.edu.ProfitFlow.services.ContaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +14,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/financeiro")
-public class ContasController implements ContasControllerDocs {
+public class ContaController implements ContasControllerDocs {
 
     @Autowired
-    private ContasService contasService;
+    private ContaService contasService;
 
     @GetMapping
     public ResponseEntity<List<ResponseContaDTO>> getContas(){

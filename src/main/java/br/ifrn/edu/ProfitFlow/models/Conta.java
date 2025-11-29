@@ -12,29 +12,27 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter @Setter
-public class Contas {
+public class Conta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     private String descricao;
+    private String categoria;
+
+    @Enumerated(EnumType.STRING)
+    private ContaTipo tipo; // RECEITA ou DESPESA
+
+    @Enumerated(EnumType.STRING)
+    private ContaStatus status; // PENDENTE | PAGO | ATRASADO
 
     @Column(precision = 10, scale = 2, nullable = false)
     private BigDecimal valor;
 
-    private LocalDate dataVencimento;
-    private LocalDate dataPagamento;
-    private LocalDateTime dataCriacao;
-    private LocalDateTime dataAtualizacao;
-
-    @Enumerated(EnumType.STRING)
-    private ContaTipo tipo;
-
-    @Enumerated(EnumType.STRING)
-    private ContaStatus status;
+    private LocalDate dataPrevista;    // vencimento/prevista
+    private LocalDate dataPagamento;   // pagamento/recebimento
 
     @ManyToOne
-    @JoinColumn(name = "cliente_fornecedor_id")
-    private ClienteFornecedor clienteFornecedor;
-
+    @JoinColumn(name = "usuario_id")
+    private Usuario pessoa;
 }

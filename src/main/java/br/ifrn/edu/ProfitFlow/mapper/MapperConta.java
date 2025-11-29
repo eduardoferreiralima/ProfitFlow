@@ -2,38 +2,45 @@ package br.ifrn.edu.ProfitFlow.mapper;
 
 import br.ifrn.edu.ProfitFlow.dto.request.RequestContaDTO;
 import br.ifrn.edu.ProfitFlow.dto.response.ResponseContaDTO;
-import br.ifrn.edu.ProfitFlow.models.Contas;
+import br.ifrn.edu.ProfitFlow.models.Conta;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface MapperConta {
 
     @Mapping(source = "descricao", target = "descricao")
-    @Mapping(source = "valor", target = "valor")
-    @Mapping(source = "dataVencimento", target = "dataVencimento")
-    @Mapping(source = "dataPagamento", target = "dataPagamento")
+    @Mapping(source = "categoria", target = "categoria")
     @Mapping(source = "tipo", target = "tipo")
     @Mapping(source = "status", target = "status")
-    @Mapping(source = "clienteFornecedorId", target = "clienteFornecedor")
-    Contas mapContaDtoToContas(RequestContaDTO c);
+    @Mapping(source = "valor", target = "valor")
+    @Mapping(source = "dataPrevista", target = "dataPrevista")
+    @Mapping(source = "dataPagamento", target = "dataPagamento")
+    Conta mapContaDtoToConta(RequestContaDTO c);
 
     @Mapping(source = "descricao", target = "descricao")
-    @Mapping(source = "valor", target = "valor")
-    @Mapping(source = "dataVencimento", target = "dataVencimento")
-    @Mapping(source = "dataPagamento", target = "dataPagamento")
+    @Mapping(source = "categoria", target = "categoria")
     @Mapping(source = "tipo", target = "tipo")
     @Mapping(source = "status", target = "status")
-    @Mapping(source = "clienteFornecedor", target = "clienteFornecedorId")
-    RequestContaDTO mapContasToRequestContaDTO(Contas c);
+    @Mapping(source = "valor", target = "valor")
+    @Mapping(source = "dataPrevista", target = "dataPrevista")
+    @Mapping(source = "dataPagamento", target = "dataPagamento")
+    RequestContaDTO mapContaToRequestContaDTO(Conta c);
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "descricao", target = "descricao")
-    @Mapping(source = "valor", target = "valor")
-    @Mapping(source = "dataVencimento", target = "dataVencimento")
-    @Mapping(source = "dataPagamento", target = "dataPagamento")
+    @Mapping(source = "categoria", target = "categoria")
     @Mapping(source = "tipo", target = "tipo")
     @Mapping(source = "status", target = "status")
-    @Mapping(source = "clienteFornecedor", target = "clienteFornecedorId")
-    ResponseContaDTO mapContasToResponseContaDTO(Contas c);
+    @Mapping(source = "valor", target = "valor")
+    @Mapping(source = "dataPrevista", target = "dataPrevista")
+    @Mapping(source = "dataPagamento", target = "dataPagamento")
+    ResponseContaDTO mapContaToResponseContaDTO(Conta c);
+
+    List<ResponseContaDTO> toResponseContaDTOList(List<Conta> contas);
+
+    void updateContaFromDTO(RequestContaDTO dto, @MappingTarget Conta c);
 }

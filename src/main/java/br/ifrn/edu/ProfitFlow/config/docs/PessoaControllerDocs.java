@@ -2,7 +2,7 @@ package br.ifrn.edu.ProfitFlow.config.docs;
 
 import br.ifrn.edu.ProfitFlow.dto.request.RequestPessoaDTO;
 import br.ifrn.edu.ProfitFlow.dto.response.ResponsePessoaDTO;
-import br.ifrn.edu.ProfitFlow.models.ClienteFornecedor;
+import br.ifrn.edu.ProfitFlow.models.Usuario;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -20,14 +20,14 @@ public interface PessoaControllerDocs {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
     })
-    ResponseEntity<List<ClienteFornecedor>> findAll();
+    ResponseEntity<List<Usuario>> findAll();
 
     @Operation(summary = "Retorna uma pessoa específica", description = "Busca uma pessoa pelo ID.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Pessoa encontrada"),
             @ApiResponse(responseCode = "404", description = "Pessoa não encontrada")
     })
-    ResponseEntity<Optional<ClienteFornecedor>> findById(
+    ResponseEntity<Optional<Usuario>> findById(
             @Parameter(description = "ID da pessoa", example = "1") Integer id);
 
     @Operation(summary = "Cadastra uma nova pessoa", description = "Cria um novo cliente ou fornecedor no sistema.")
@@ -61,13 +61,13 @@ public interface PessoaControllerDocs {
             @ApiResponse(responseCode = "200", description = "Resultados encontrados"),
             @ApiResponse(responseCode = "404", description = "Nenhuma pessoa encontrada")
     })
-    ResponseEntity<List<ClienteFornecedor>> findByNome(
+    ResponseEntity<List<Usuario>> findByNome(
             @Parameter(description = "Nome, CPF ou CNPJ a ser buscado", example = "João") String nome);
 
     @Operation(summary = "Lista pessoas por tipo", description = "Retorna todas as pessoas de um tipo específico (CLIENTE ou FORNECEDOR).")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista filtrada por tipo retornada")
     })
-    ResponseEntity<List<ClienteFornecedor>> findByTipo(
+    ResponseEntity<List<Usuario>> findByTipo(
             @Parameter(description = "Tipo da pessoa (CLIENTE ou FORNECEDOR)", example = "CLIENTE") String tipo);
 }
