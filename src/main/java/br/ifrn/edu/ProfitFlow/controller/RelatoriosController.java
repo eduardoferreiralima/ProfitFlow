@@ -1,6 +1,6 @@
 package br.ifrn.edu.ProfitFlow.controller;
 
-import br.ifrn.edu.ProfitFlow.config.docs.RelatoriosControllerDocs;
+import br.ifrn.edu.ProfitFlow.controller.docs.RelatoriosControllerDocs;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
@@ -23,4 +23,6 @@ public class RelatoriosController implements RelatoriosControllerDocs {
     public ResponseEntity<?> getSituacaoFinanceira(){
         return ResponseEntity.ok().build();
     }
+
+
 }

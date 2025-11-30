@@ -48,3 +48,5 @@ public abstract class Usuario {
     private LocalDateTime dataAtualizacao;
 
 }
+
+

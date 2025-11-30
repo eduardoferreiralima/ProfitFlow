@@ -38,7 +38,7 @@ public class ContaService {
         return contasDTO;
     }
 
-    public ResponseContaDTO getConta(Integer id) throws Exception {
+    public ResponseContaDTO getConta(Long id) throws Exception {
         Conta conta = contasRepository.findById(id)
                 .orElseThrow(()-> new Exception("Conta não encontrada"));
 
@@ -61,7 +61,7 @@ public class ContaService {
     }
 
 
-    public ResponseContaDTO updateConta(Integer id, RequestContaDTO contaDTO) throws Exception {
+    public ResponseContaDTO updateConta(Long id, RequestContaDTO contaDTO) throws Exception {
         Conta conta = contasRepository.findById(id)
                 .orElseThrow(() -> new Exception("Conta não encontrada com ID: " + id));
         mapper.updateContaFromDTO(contaDTO, conta);
@@ -70,14 +70,14 @@ public class ContaService {
         return contaResponse;
     }
 
-    public boolean updateQuitar(Integer id) throws Exception {
+    public boolean updateQuitar(Long id) throws Exception {
         Conta conta = contasRepository.findById(id)
                 .orElseThrow(() -> new Exception("Conta com ID " + id + " não encontrada!"));
         conta.setStatus(ContaStatus.PAGO);
         contasRepository.save(conta);
         return true;
     }
-    public void deleteConta(Integer id){
+    public void deleteConta(Long id){
         contasRepository.deleteById(id);
     }
     public ResponseContaDTO getVencidas(){

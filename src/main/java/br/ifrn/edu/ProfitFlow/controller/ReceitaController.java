@@ -1,6 +1,6 @@
 package br.ifrn.edu.ProfitFlow.controller;
 
-import br.ifrn.edu.ProfitFlow.config.docs.ReceitaControllerDocs;
+import br.ifrn.edu.ProfitFlow.controller.docs.ReceitaControllerDocs;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

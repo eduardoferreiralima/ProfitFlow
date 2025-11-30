@@ -36,11 +36,10 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
-    public Optional<Usuario> findById(Integer id){
+    public Optional<Usuario> findById(Long id){
         return usuarioRepository.findById(id);
     }
 
-    @Transactional
     public ResponsePessoaDTO createUser(RequestPessoaDTO pessoa) throws Exception {
 
         if (pessoa.getPessoa() != PessoaTipo.CLIENTE && pessoa.getPessoa() != PessoaTipo.FORNECEDOR) {
@@ -68,12 +67,12 @@ public class UsuarioService {
         return responsePessoaDTO;
     }
 
-    public static boolean isCpf(String value) {
+    public boolean isCpf(String value) {
         String digits = value.replaceAll("\\D", "");
         return digits.length() == 11;
     }
 
-    public static boolean isCnpj(String value) {
+    public boolean isCnpj(String value) {
         String digits = value.replaceAll("\\D", "");
         return digits.length() == 14;
     }
