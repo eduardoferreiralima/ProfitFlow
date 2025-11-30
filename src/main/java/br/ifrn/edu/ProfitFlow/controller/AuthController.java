@@ -1,7 +1,7 @@
 package br.ifrn.edu.ProfitFlow.controller;
 
 
-import br.ifrn.edu.ProfitFlow.config.docs.AuthControllerDocs;
+import br.ifrn.edu.ProfitFlow.controller.docs.AuthControllerDocs;
 import br.ifrn.edu.ProfitFlow.dto.request.RequestPessoaDTO;
 import br.ifrn.edu.ProfitFlow.dto.response.ResponsePessoaDTO;
 import br.ifrn.edu.ProfitFlow.models.Usuario;
@@ -52,7 +52,7 @@ public class AuthController implements AuthControllerDocs {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<Usuario>> findById(@PathVariable Integer id){
+    public ResponseEntity<Optional<Usuario>> findById(@PathVariable Long id){
         return ResponseEntity.ok(usuarioService.findById(id));
     }
 

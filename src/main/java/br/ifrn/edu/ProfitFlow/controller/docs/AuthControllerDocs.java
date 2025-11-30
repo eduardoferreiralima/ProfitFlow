@@ -1,4 +1,4 @@
-package br.ifrn.edu.ProfitFlow.config.docs;
+package br.ifrn.edu.ProfitFlow.controller.docs;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

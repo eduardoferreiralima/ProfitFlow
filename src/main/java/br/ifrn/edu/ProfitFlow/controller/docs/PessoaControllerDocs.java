@@ -1,4 +1,4 @@
-package br.ifrn.edu.ProfitFlow.config.docs;
+package br.ifrn.edu.ProfitFlow.controller.docs;
 
 import br.ifrn.edu.ProfitFlow.dto.request.RequestPessoaDTO;
 import br.ifrn.edu.ProfitFlow.dto.response.ResponsePessoaDTO;

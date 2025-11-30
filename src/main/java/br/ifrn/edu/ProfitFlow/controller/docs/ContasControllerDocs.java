@@ -1,4 +1,4 @@
-package br.ifrn.edu.ProfitFlow.config.docs;
+package br.ifrn.edu.ProfitFlow.controller.docs;
 
 import br.ifrn.edu.ProfitFlow.dto.request.RequestContaDTO;
 import br.ifrn.edu.ProfitFlow.dto.response.ResponseContaDTO;
@@ -26,7 +26,7 @@ public interface ContasControllerDocs {
             @ApiResponse(responseCode = "404", description = "Conta não encontrada")
     })
     ResponseEntity<?> getConta(
-            @Parameter(description = "ID da conta", example = "1") Integer id
+            @Parameter(description = "ID da conta", example = "1") Long id
     ) throws Exception;
 
     @Operation(summary = "Registra uma nova conta", description = "Cria uma nova conta (PAGAR ou RECEBER).")
@@ -45,7 +45,7 @@ public interface ContasControllerDocs {
             @ApiResponse(responseCode = "404", description = "Conta não encontrada")
     })
     ResponseEntity<ResponseContaDTO> updateConta(
-            @Parameter(description = "ID da conta a ser atualizada", example = "1") Integer id,
+            @Parameter(description = "ID da conta a ser atualizada", example = "1") Long id,
             @Parameter(description = "Dados relacionados a conta") RequestContaDTO conta
     ) throws Exception;
 
@@ -55,7 +55,7 @@ public interface ContasControllerDocs {
             @ApiResponse(responseCode = "404", description = "Conta não encontrada")
     })
     ResponseEntity<?> deleteConta(
-            @Parameter(description = "ID da conta a ser removida", example = "1") Integer id
+            @Parameter(description = "ID da conta a ser removida", example = "1") Long id
     );
 
     @Operation(summary = "Marca a conta como quitada", description = "Atualiza o status da conta para quitada (paga ou recebida).")
@@ -65,7 +65,7 @@ public interface ContasControllerDocs {
             @ApiResponse(responseCode = "404", description = "Conta não encontrada")
     })
     ResponseEntity<?> updateQuitar(
-            @Parameter(description = "ID da conta a ser quitada", example = "1") Integer id
+            @Parameter(description = "ID da conta a ser quitada", example = "1") Long id
     ) throws Exception;
 
     @Operation(summary = "Lista todas as contas vencidas", description = "Retorna todas as contas que estão vencidas.")

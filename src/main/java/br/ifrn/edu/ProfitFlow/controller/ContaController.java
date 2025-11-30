@@ -1,7 +1,7 @@
 package br.ifrn.edu.ProfitFlow.controller;
 
 
-import br.ifrn.edu.ProfitFlow.config.docs.ContasControllerDocs;
+import br.ifrn.edu.ProfitFlow.controller.docs.ContasControllerDocs;
 import br.ifrn.edu.ProfitFlow.dto.request.RequestContaDTO;
 import br.ifrn.edu.ProfitFlow.dto.response.ResponseContaDTO;
 import br.ifrn.edu.ProfitFlow.services.ContaService;
@@ -25,7 +25,7 @@ public class ContaController implements ContasControllerDocs {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseContaDTO> getConta(@PathVariable Integer id) throws Exception {
+    public ResponseEntity<ResponseContaDTO> getConta(@PathVariable Long id) throws Exception {
         return ResponseEntity.ok(contasService.getConta(id));
     }
 
@@ -35,18 +35,18 @@ public class ContaController implements ContasControllerDocs {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseContaDTO> updateConta(@PathVariable Integer id, @RequestBody RequestContaDTO conta) throws Exception {
+    public ResponseEntity<ResponseContaDTO> updateConta(@PathVariable Long id, @RequestBody RequestContaDTO conta) throws Exception {
         return ResponseEntity.ok(contasService.updateConta(id, conta));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteConta(@PathVariable Integer id){
+    public ResponseEntity<?> deleteConta(@PathVariable Long id){
         contasService.deleteConta(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping("/{id}/quitar")
-    public ResponseEntity<?> updateQuitar(@PathVariable Integer id) throws Exception {
+    public ResponseEntity<?> updateQuitar(@PathVariable Long id) throws Exception {
         contasService.updateQuitar(id);
         return ResponseEntity.ok().build();
     }

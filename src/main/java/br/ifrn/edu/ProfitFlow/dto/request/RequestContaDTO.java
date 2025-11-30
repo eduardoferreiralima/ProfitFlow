@@ -2,6 +2,7 @@ package br.ifrn.edu.ProfitFlow.dto.request;
 
 import br.ifrn.edu.ProfitFlow.models.enums.ContaStatus;
 import br.ifrn.edu.ProfitFlow.models.enums.ContaTipo;
+import br.ifrn.edu.ProfitFlow.models.enums.FormaPagamento;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,6 +19,6 @@ public class RequestContaDTO {
     private BigDecimal valor;
     private LocalDate dataPrevista;    // vencimento/prevista
     private LocalDate dataPagamento;   // pagamento/recebimento
-    private Integer pessoaId;
-
+    private Long pessoaId;
+    private FormaPagamento formaPagamento;
 }

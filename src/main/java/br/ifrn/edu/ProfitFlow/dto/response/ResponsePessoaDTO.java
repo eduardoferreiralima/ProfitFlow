@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 @Getter @Setter
 public class ResponsePessoaDTO {
-    private Integer id;
+    private Long id;
     private String nome;
     private String email;
     private String cpfCnpj;

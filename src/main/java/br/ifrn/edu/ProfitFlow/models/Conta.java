@@ -2,13 +2,13 @@ package br.ifrn.edu.ProfitFlow.models;
 
 import br.ifrn.edu.ProfitFlow.models.enums.ContaStatus;
 import br.ifrn.edu.ProfitFlow.models.enums.ContaTipo;
+import br.ifrn.edu.ProfitFlow.models.enums.FormaPagamento;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter @Setter
@@ -25,6 +25,9 @@ public class Conta {
 
     @Enumerated(EnumType.STRING)
     private ContaStatus status; // PENDENTE | PAGO | ATRASADO
+
+    @Enumerated(EnumType.STRING)
+    private FormaPagamento formaPagamento;
 
     @Column(precision = 10, scale = 2, nullable = false)
     private BigDecimal valor;
