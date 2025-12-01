@@ -27,29 +27,6 @@ public interface ImporterControllerDocs {
 
 
     @Operation(
-            summary = "Listar importações",
-            description = "Retorna o histórico de todas as importações realizadas."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Lista de importações retornada com sucesso")
-    })
-    ResponseEntity<?> getImports();
-
-
-    @Operation(
-            summary = "Buscar importação por ID",
-            description = "Retorna os detalhes de uma importação específica."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Importação encontrada"),
-            @ApiResponse(responseCode = "404", description = "Importação não encontrada")
-    })
-    ResponseEntity<?> getImports(
-            @Parameter(description = "ID da importação", example = "123") String id
-    );
-
-
-    @Operation(
             summary = "Fazer upload de arquivo",
             description = "Recebe um arquivo via multipart/form-data e realiza o processamento de importação."
     )
@@ -67,20 +44,5 @@ public interface ImporterControllerDocs {
             )
             MultipartFile file
     );
-
-
-    @Operation(
-            summary = "Excluir importação",
-            description = "Remove uma importação do histórico pelo ID."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Importação excluída com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Importação não encontrada")
-    })
-    ResponseEntity<?> deleteFile(
-            @Parameter(description = "ID da importação", example = "123") String id
-    );
-
-
 
 }

@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
@@ -110,7 +111,7 @@ public interface RegistroFinanceiroControllerDocs {
     ) throws Exception;
 
     @Operation(
-            summary = "Lista registros por tipo e status",
+            summary = "Lista registros por categoria",
             description = "Retorna registros financeiros filtrados pelo tipo (RECEITA ou DESPESA) e status (PENDENTE, PAGO ou ATRASADO)."
     )
     @ApiResponses({
@@ -141,7 +142,7 @@ public interface RegistroFinanceiroControllerDocs {
     })
     ResponseEntity<?> getRegistroFinanceiroPorTipo(
             @Parameter(description = "Tipo do registro financeiro (RECEITA ou DESPESA)", example = "RECEITA") ContaTipo tipo
-    );
+    ) throws BadRequestException;
 
     @Operation(
             summary = "Exibir dados Financeiros por Periodo",

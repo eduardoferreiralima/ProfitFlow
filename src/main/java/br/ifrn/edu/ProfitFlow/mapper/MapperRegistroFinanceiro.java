@@ -7,7 +7,6 @@ import br.ifrn.edu.ProfitFlow.models.RegistroFinanceiro;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-
 import java.util.List;
 
 @Mapper(componentModel = "spring")
