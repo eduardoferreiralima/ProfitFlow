@@ -4,15 +4,15 @@ import br.ifrn.edu.ProfitFlow.models.enums.ContaStatus;
 import br.ifrn.edu.ProfitFlow.models.enums.ContaTipo;
 import br.ifrn.edu.ProfitFlow.models.enums.FormaPagamento;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
 @Getter @Setter
-public class Conta {
+public class RegistroFinanceiro {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,6 +33,8 @@ public class Conta {
     private BigDecimal valor;
 
     private LocalDate dataPrevista;    // vencimento/prevista
+
+    @PastOrPresent(message = "A data de Pagamento ou Recebimento não pode ser futura!")
     private LocalDate dataPagamento;   // pagamento/recebimento
 
     @ManyToOne

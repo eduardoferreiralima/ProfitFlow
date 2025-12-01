@@ -2,10 +2,8 @@ package br.ifrn.edu.ProfitFlow.file.importer.impl;
 
 import br.ifrn.edu.ProfitFlow.dto.ImporterDTO;
 import br.ifrn.edu.ProfitFlow.file.importer.contract.FileImporter;
-import br.ifrn.edu.ProfitFlow.models.enums.ContaStatus;
 import br.ifrn.edu.ProfitFlow.models.enums.ContaTipo;
 import br.ifrn.edu.ProfitFlow.models.enums.FormaPagamento;
-import br.ifrn.edu.ProfitFlow.models.enums.PessoaTipo;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -13,7 +11,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
-
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -59,18 +56,13 @@ public class XlsxImporter implements FileImporter {
         ImporterDTO dto = new ImporterDTO();
 
         dto.setTipoLancamento(parseEnum(ContaTipo.class, getString(row, 0)));
-        dto.setDescricao(getString(row, 1));
-        dto.setValor(parseBigDecimal(row, 2));
-        dto.setStatus(parseEnum(ContaStatus.class, getString(row, 3)));
-        dto.setFormaPagamento(parseEnum(FormaPagamento.class, getString(row, 4)));
-        dto.setCategoria(getString(row, 5));
-        dto.setNomeClienteFornecedor(getString(row, 6));
-        dto.setTipoClienteFornecedor(parseEnum(PessoaTipo.class, getString(row,7)));
-        dto.setCpfCnpj(getString(row, 8));
-        dto.setEmail(getString(row, 9));
-        dto.setDataPrevista(parseDate(row, 10));
-        dto.setDataPagamento(parseDate(row, 11));
-        dto.setObservacoes(getString(row, 12));
+        dto.setValor(parseBigDecimal(row, 1));
+        dto.setFormaPagamento(parseEnum(FormaPagamento.class, getString(row, 2)));
+        dto.setCategoria(getString(row, 3));
+        dto.setNomeClienteFornecedor(getString(row, 4));
+        dto.setCpfCnpj(getString(row, 5));
+        dto.setDataPrevista(parseDate(row, 6));
+        dto.setDataPagamento(parseDate(row, 7));
 
         return dto;
     }
@@ -79,7 +71,7 @@ public class XlsxImporter implements FileImporter {
         if (row == null) return false;
 
         // Definindo colunas obrigatórias
-        int[] mandatoryColumns = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        int[] mandatoryColumns = {0, 1, 2, 3, 4, 5};
 
         for (int col : mandatoryColumns) {
             Cell cell = row.getCell(col, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
@@ -149,7 +141,6 @@ public class XlsxImporter implements FileImporter {
         String value = formatter.formatCellValue(cell).trim();
         if (value.isBlank()) return null;
 
-        // Todos os formatos possíveis para Excel, Mockaroo e usuários
         String[] patterns = {
                 "dd/MM/yyyy", "d/M/yyyy",
                 "MM/dd/yyyy", "M/d/yyyy",
@@ -165,7 +156,6 @@ public class XlsxImporter implements FileImporter {
             } catch (Exception ignored) {}
         }
 
-        System.out.println("❌ Data inválida detectada: '" + value + "'");
         throw new RuntimeException("Formato de data inválido: " + value);
     }
     private <T extends Enum<T>> T parseEnum(Class<T> enumClass, String value) {

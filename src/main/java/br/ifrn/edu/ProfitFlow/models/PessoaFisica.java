@@ -5,6 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.br.CPF;
@@ -13,8 +14,9 @@ import org.hibernate.validator.constraints.br.CPF;
 @Getter @Setter
 public class PessoaFisica extends Usuario {
 
-    @CPF
+    @CPF(message = "CPF Inválido!")
     @Column(unique = true)
+    @NotBlank(message = "O CPF é obrigatório!")
     private String cpf;
 
     @Enumerated(EnumType.STRING)

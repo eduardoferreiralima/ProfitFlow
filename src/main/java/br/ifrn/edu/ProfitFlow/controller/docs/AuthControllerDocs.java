@@ -44,4 +44,5 @@ public interface AuthControllerDocs {
             @ApiResponse(responseCode = "200", description = "Logout realizado com sucesso")
     })
     ResponseEntity<?> logout();
+
 }

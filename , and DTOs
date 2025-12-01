@@ -398,10 +398,10 @@
 [1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/controller/ContaController.java[m
 [36m@@ -4,7 +4,7 @@[m [mpackage br.ifrn.edu.ProfitFlow.controller;[m
  import br.ifrn.edu.ProfitFlow.config.docs.ContasControllerDocs;[m
- import br.ifrn.edu.ProfitFlow.dto.request.RequestContaDTO;[m
- import br.ifrn.edu.ProfitFlow.dto.response.ResponseContaDTO;[m
+ import br.ifrn.edu.ProfitFlow.dto.request.RequestRegistroFinanceiroDTO;[m
+ import br.ifrn.edu.ProfitFlow.dto.response.ResponseRegistroFinanceiroDTO;[m
 [31m-import br.ifrn.edu.ProfitFlow.services.ContasService;[m
-[32m+[m[32mimport br.ifrn.edu.ProfitFlow.services.ContaService;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.services.RegistroFinanceiroService;[m
  import org.springframework.beans.factory.annotation.Autowired;[m
  import org.springframework.http.HttpStatus;[m
  import org.springframework.http.ResponseEntity;[m
@@ -649,10 +649,10 @@
 [1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/mapper/MapperConta.java[m
 [36m@@ -2,38 +2,45 @@[m [mpackage br.ifrn.edu.ProfitFlow.mapper;[m
  [m
- import br.ifrn.edu.ProfitFlow.dto.request.RequestContaDTO;[m
- import br.ifrn.edu.ProfitFlow.dto.response.ResponseContaDTO;[m
+ import br.ifrn.edu.ProfitFlow.dto.request.RequestRegistroFinanceiroDTO;[m
+ import br.ifrn.edu.ProfitFlow.dto.response.ResponseRegistroFinanceiroDTO;[m
 [31m-import br.ifrn.edu.ProfitFlow.models.Contas;[m
-[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.Conta;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.RegistroFinanceiro;[m
  import org.mapstruct.Mapper;[m
  import org.mapstruct.Mapping;[m
 [32m+[m[32mimport org.mapstruct.MappingTarget;[m
@@ -705,7 +705,7 @@
 [32m+[m[32m    @Mapping(source = "dataPagamento", target = "dataPagamento")[m
 [32m+[m[32m    ResponseContaDTO mapContaToResponseContaDTO(Conta c);[m
 [32m+[m
-[32m+[m[32m    List<ResponseContaDTO> toResponseContaDTOList(List<Conta> contas);[m
+[32m+[m[32m    List<ResponseContaDTO> toResponseContaDTOList(List<Conta> registroFinanceiros);[m
 [32m+[m
 [32m+[m[32m    void updateContaFromDTO(RequestContaDTO dto, @MappingTarget Conta c);[m
  }[m
@@ -1177,7 +1177,7 @@
 [36m@@ -0,0 +1,7 @@[m
 [32m+[m[32mpackage br.ifrn.edu.ProfitFlow.repository;[m
 [32m+[m
-[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.Conta;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.RegistroFinanceiro;[m
 [32m+[m[32mimport org.springframework.data.jpa.repository.JpaRepository;[m
 [32m+[m
 [32m+[m[32mpublic interface ContaRepository extends JpaRepository<Conta, Integer> {[m
@@ -1349,13 +1349,13 @@
 [36m@@ -0,0 +1,101 @@[m
 [32m+[m[32mpackage br.ifrn.edu.ProfitFlow.services;[m
 [32m+[m
-[32m+[m[32mimport br.ifrn.edu.ProfitFlow.dto.request.RequestContaDTO;[m
-[32m+[m[32mimport br.ifrn.edu.ProfitFlow.dto.response.ResponseContaDTO;[m
-[32m+[m[32mimport br.ifrn.edu.ProfitFlow.mapper.MapperConta;[m
-[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.Conta;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.dto.request.RequestRegistroFinanceiroDTO;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.dto.response.ResponseRegistroFinanceiroDTO;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.mapper.MapperRegistroFinanceiro;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.RegistroFinanceiro;[m
 [32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.Usuario;[m
 [32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.enums.ContaStatus;[m
-[32m+[m[32mimport br.ifrn.edu.ProfitFlow.repository.ContaRepository;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.repository.RegistroFinanceiroRepository;[m
 [32m+[m[32mimport br.ifrn.edu.ProfitFlow.repository.UsuarioRepository;[m
 [32m+[m[32mimport jakarta.persistence.EntityNotFoundException;[m
 [32m+[m[32mimport org.springframework.beans.factory.annotation.Autowired;[m
@@ -1388,10 +1388,10 @@
 [32m+[m[32m    }[m
 [32m+[m
 [32m+[m[32m    public ResponseContaDTO getConta(Integer id) throws Exception {[m
-[32m+[m[32m        Conta conta = contasRepository.findById(id)[m
+[32m+[m[32m        Conta registroFinanceiro = contasRepository.findById(id)[m
 [32m+[m[32m                .orElseThrow(()-> new Exception("Conta não encontrada"));[m
 [32m+[m
-[32m+[m[32m        ResponseContaDTO contaDTO = mapper.mapContaToResponseContaDTO(conta);[m
+[32m+[m[32m        ResponseContaDTO contaDTO = mapper.mapContaToResponseContaDTO(registroFinanceiro);[m
 [32m+[m
 [32m+[m[32m        return contaDTO;[m
 [32m+[m[32m    }[m
@@ -1401,29 +1401,29 @@
 [32m+[m[32m                .orElseThrow(() -> new EntityNotFoundException([m
 [32m+[m[32m                        "Cliente ou Fornecedor não encontrado com ID: " + contaDTO.getPessoaId()[m
 [32m+[m[32m                ));[m
-[32m+[m[32m        Conta conta = mapper.mapContaDtoToConta(contaDTO);[m
-[32m+[m[32m        conta.setPessoa(user);[m
-[32m+[m[32m        conta = contasRepository.save(conta);[m
-[32m+[m[32m        ResponseContaDTO contaResponse = mapper.mapContaToResponseContaDTO(conta);[m
+[32m+[m[32m        Conta registroFinanceiro = mapper.mapContaDtoToConta(contaDTO);[m
+[32m+[m[32m        registroFinanceiro.setPessoa(user);[m
+[32m+[m[32m        registroFinanceiro = contasRepository.save(registroFinanceiro);[m
+[32m+[m[32m        ResponseContaDTO contaResponse = mapper.mapContaToResponseContaDTO(registroFinanceiro);[m
 [32m+[m[32m        contaResponse.setPessoa(user);[m
 [32m+[m[32m        return contaResponse;[m
 [32m+[m[32m    }[m
 [32m+[m
 [32m+[m
 [32m+[m[32m    public ResponseContaDTO updateConta(Integer id, RequestContaDTO contaDTO) throws Exception {[m
-[32m+[m[32m        Conta conta = contasRepository.findById(id)[m
+[32m+[m[32m        Conta registroFinanceiro = contasRepository.findById(id)[m
 [32m+[m[32m                .orElseThrow(() -> new Exception("Conta não encontrada com ID: " + id));[m
-[32m+[m[32m        mapper.updateContaFromDTO(contaDTO, conta);[m
-[32m+[m[32m        conta = contasRepository.save(conta);[m
-[32m+[m[32m        ResponseContaDTO contaResponse = mapper.mapContaToResponseContaDTO(conta);[m
+[32m+[m[32m        mapper.updateContaFromDTO(contaDTO, registroFinanceiro);[m
+[32m+[m[32m        registroFinanceiro = contasRepository.save(registroFinanceiro);[m
+[32m+[m[32m        ResponseContaDTO contaResponse = mapper.mapContaToResponseContaDTO(registroFinanceiro);[m
 [32m+[m[32m        return contaResponse;[m
 [32m+[m[32m    }[m
 [32m+[m
 [32m+[m[32m    public boolean updateQuitar(Integer id) throws Exception {[m
-[32m+[m[32m        Conta conta = contasRepository.findById(id)[m
+[32m+[m[32m        Conta registroFinanceiro = contasRepository.findById(id)[m
 [32m+[m[32m                .orElseThrow(() -> new Exception("Conta com ID " + id + " não encontrada!"));[m
-[32m+[m[32m        conta.setStatus(ContaStatus.PAGO);[m
-[32m+[m[32m        contasRepository.save(conta);[m
+[32m+[m[32m        registroFinanceiro.setStatus(ContaStatus.PAGO);[m
+[32m+[m[32m        contasRepository.save(registroFinanceiro);[m
 [32m+[m[32m        return true;[m
 [32m+[m[32m    }[m
 [32m+[m[32m    public void deleteConta(Integer id){[m
@@ -1457,8 +1457,8 @@
 [31m-package br.ifrn.edu.ProfitFlow.services;[m
 [31m-[m
 [31m-[m
-[31m-import br.ifrn.edu.ProfitFlow.dto.request.RequestContaDTO;[m
-[31m-import br.ifrn.edu.ProfitFlow.dto.response.ResponseContaDTO;[m
+[31m-import br.ifrn.edu.ProfitFlow.dto.request.RequestRegistroFinanceiroDTO;[m
+[31m-import br.ifrn.edu.ProfitFlow.dto.response.ResponseRegistroFinanceiroDTO;[m
 [31m-import br.ifrn.edu.ProfitFlow.models.ClienteFornecedor;[m
 [31m-import br.ifrn.edu.ProfitFlow.models.Contas;[m
 [31m-import br.ifrn.edu.ProfitFlow.models.enums.ContaStatus;[m
@@ -1485,24 +1485,24 @@
 [31m-[m
 [31m-[m
 [31m-    public List<ResponseContaDTO> getContas(){[m
-[31m-        List<ResponseContaDTO> contas = new ArrayList<>();[m
+[31m-        List<ResponseContaDTO> registroFinanceiros = new ArrayList<>();[m
 [31m-[m
 [31m-        List<Contas> c = contasRepository.findAll();[m
 [31m-        for (Contas cc : c) {[m
-[31m-            ResponseContaDTO conta = new ResponseContaDTO();[m
-[31m-            conta.setId(cc.getId());[m
-[31m-            conta.setDescricao(cc.getDescricao());[m
-[31m-            conta.setValor(cc.getValor());[m
-[31m-            conta.setDataPagamento(cc.getDataPagamento());[m
-[31m-            conta.setDataVencimento(cc.getDataVencimento());[m
-[31m-            conta.setDataAtualizacao(cc.getDataAtualizacao());[m
-[31m-            conta.setTipo(cc.getTipo());[m
-[31m-            conta.setStatus(cc.getStatus());[m
-[31m-            conta.setClienteFornecedor(cc.getClienteFornecedor());[m
-[31m-            contas.add(conta);[m
+[31m-            ResponseContaDTO registroFinanceiro = new ResponseContaDTO();[m
+[31m-            registroFinanceiro.setId(cc.getId());[m
+[31m-            registroFinanceiro.setDescricao(cc.getDescricao());[m
+[31m-            registroFinanceiro.setValor(cc.getValor());[m
+[31m-            registroFinanceiro.setDataPagamento(cc.getDataPagamento());[m
+[31m-            registroFinanceiro.setDataVencimento(cc.getDataVencimento());[m
+[31m-            registroFinanceiro.setDataAtualizacao(cc.getDataAtualizacao());[m
+[31m-            registroFinanceiro.setTipo(cc.getTipo());[m
+[31m-            registroFinanceiro.setStatus(cc.getStatus());[m
+[31m-            registroFinanceiro.setClienteFornecedor(cc.getClienteFornecedor());[m
+[31m-            registroFinanceiros.add(registroFinanceiro);[m
 [31m-        }[m
 [31m-[m
-[31m-        return contas;[m
+[31m-        return registroFinanceiros;[m
 [31m-    }[m
 [31m-[m
 [31m-[m
@@ -1510,35 +1510,35 @@
 [31m-        Contas c = contasRepository.findById(id)[m
 [31m-                .orElseThrow(()-> new Exception("Conta não encontrada"));[m
 [31m-[m
-[31m-        ResponseContaDTO conta = new ResponseContaDTO();[m
-[31m-        conta.setId(c.getId());[m
-[31m-        conta.setDescricao(c.getDescricao());[m
-[31m-        conta.setValor(c.getValor());[m
-[31m-        conta.setDataPagamento(c.getDataPagamento());[m
-[31m-        conta.setDataVencimento(c.getDataVencimento());[m
-[31m-        conta.setDataAtualizacao(c.getDataAtualizacao());[m
-[31m-        conta.setTipo(c.getTipo());[m
-[31m-        conta.setStatus(c.getStatus());[m
-[31m-        conta.setClienteFornecedor(c.getClienteFornecedor());[m
-[31m-        conta.setDataCriacao(c.getDataCriacao());[m
+[31m-        ResponseContaDTO registroFinanceiro = new ResponseContaDTO();[m
+[31m-        registroFinanceiro.setId(c.getId());[m
+[31m-        registroFinanceiro.setDescricao(c.getDescricao());[m
+[31m-        registroFinanceiro.setValor(c.getValor());[m
+[31m-        registroFinanceiro.setDataPagamento(c.getDataPagamento());[m
+[31m-        registroFinanceiro.setDataVencimento(c.getDataVencimento());[m
+[31m-        registroFinanceiro.setDataAtualizacao(c.getDataAtualizacao());[m
+[31m-        registroFinanceiro.setTipo(c.getTipo());[m
+[31m-        registroFinanceiro.setStatus(c.getStatus());[m
+[31m-        registroFinanceiro.setClienteFornecedor(c.getClienteFornecedor());[m
+[31m-        registroFinanceiro.setDataCriacao(c.getDataCriacao());[m
 [31m-[m
-[31m-        return conta;[m
+[31m-        return registroFinanceiro;[m
 [31m-    }[m
 [31m-[m
 [31m-[m
-[31m-    public ResponseContaDTO createConta(RequestContaDTO conta) throws Exception {[m
+[31m-    public ResponseContaDTO createConta(RequestContaDTO registroFinanceiro) throws Exception {[m
 [31m-        Contas c = new Contas();[m
-[31m-        c.setDescricao(conta.getDescricao());[m
-[31m-        c.setValor(conta.getValor());[m
-[31m-        c.setDataPagamento(conta.getDataPagamento());[m
-[31m-        c.setDataVencimento(conta.getDataVencimento());[m
+[31m-        c.setDescricao(registroFinanceiro.getDescricao());[m
+[31m-        c.setValor(registroFinanceiro.getValor());[m
+[31m-        c.setDataPagamento(registroFinanceiro.getDataPagamento());[m
+[31m-        c.setDataVencimento(registroFinanceiro.getDataVencimento());[m
 [31m-        c.setDataAtualizacao(LocalDateTime.now());[m
-[31m-        c.setTipo(conta.getTipo());[m
-[31m-        c.setStatus(conta.getStatus());[m
+[31m-        c.setTipo(registroFinanceiro.getTipo());[m
+[31m-        c.setStatus(registroFinanceiro.getStatus());[m
 [31m-        c.setDataCriacao(LocalDateTime.now());[m
-[31m-        ClienteFornecedor cf = clienteFornecedorRepository.findById(conta.getClienteFornecedorId())[m
+[31m-        ClienteFornecedor cf = clienteFornecedorRepository.findById(registroFinanceiro.getClienteFornecedorId())[m
 [31m-                .orElseThrow(() -> new Exception([m
-[31m-                        "Cliente ou Fornecedor não encontrado com ID: " + conta.getClienteFornecedorId()[m
+[31m-                        "Cliente ou Fornecedor não encontrado com ID: " + registroFinanceiro.getClienteFornecedorId()[m
 [31m-                ));[m
 [31m-        c.setClienteFornecedor(cf);[m
 [31m-[m
@@ -1559,16 +1559,16 @@
 [31m-    }[m
 [31m-[m
 [31m-[m
-[31m-    public ResponseContaDTO updateConta(Integer id, RequestContaDTO conta) throws Exception {[m
+[31m-    public ResponseContaDTO updateConta(Integer id, RequestContaDTO registroFinanceiro) throws Exception {[m
 [31m-        Contas c = contasRepository.findById(id)[m
 [31m-                .orElseThrow(() -> new Exception("Conta não encontrada com ID: " + id));[m
-[31m-        c.setDescricao(conta.getDescricao());[m
-[31m-        c.setValor(conta.getValor());[m
-[31m-        c.setDataPagamento(conta.getDataPagamento());[m
-[31m-        c.setDataVencimento(conta.getDataVencimento());[m
+[31m-        c.setDescricao(registroFinanceiro.getDescricao());[m
+[31m-        c.setValor(registroFinanceiro.getValor());[m
+[31m-        c.setDataPagamento(registroFinanceiro.getDataPagamento());[m
+[31m-        c.setDataVencimento(registroFinanceiro.getDataVencimento());[m
 [31m-        c.setDataAtualizacao(LocalDateTime.now());[m
-[31m-        c.setTipo(conta.getTipo());[m
-[31m-        c.setStatus(conta.getStatus());[m
+[31m-        c.setTipo(registroFinanceiro.getTipo());[m
+[31m-        c.setStatus(registroFinanceiro.getStatus());[m
 [31m-        contasRepository.save(c);[m
 [31m-[m
 [31m-        ResponseContaDTO contaResponse = new ResponseContaDTO();[m
@@ -1593,10 +1593,10 @@
 [31m-[m
 [31m-[m
 [31m-    public boolean updateQuitar(Integer id) throws Exception {[m
-[31m-        Contas conta = contasRepository.findById(id)[m
+[31m-        Contas registroFinanceiro = contasRepository.findById(id)[m
 [31m-                .orElseThrow(() -> new Exception("Conta com ID " + id + " não encontrada!"));[m
-[31m-        conta.setStatus(ContaStatus.PAGO);[m
-[31m-        contasRepository.save(conta);[m
+[31m-        registroFinanceiro.setStatus(ContaStatus.PAGO);[m
+[31m-        contasRepository.save(registroFinanceiro);[m
 [31m-        return true;[m
 [31m-    }[m
 [31m-[m
