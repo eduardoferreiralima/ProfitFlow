@@ -1,6 +1,6 @@
 package br.ifrn.edu.ProfitFlow.controller;
 
-
+import br.ifrn.edu.ProfitFlow.controller.docs.ImporterControllerDocs;
 import br.ifrn.edu.ProfitFlow.dto.ImporterDTO;
 import br.ifrn.edu.ProfitFlow.services.ImporterService;
 import lombok.SneakyThrows;
@@ -10,12 +10,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/importer")
-public class ImporterController {
+public class ImporterController implements ImporterControllerDocs {
 
     @Autowired
     private ImporterService importerService;

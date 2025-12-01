@@ -50,7 +50,8 @@ public class OpenApiConfig {
                 ))
                 .tags(List.of(
                         new Tag().name("Auth").description("Operações relacionadas a Autenticação"),
-                        new Tag().name("Contas").description("Operações relacionadas a Contas a pagar e a receber"),
+                        new Tag().name("Administrar Usuários").description("Operações relacionadas a Administtração de Usuários"),
+                        new Tag().name("Registro Financeiro").description("Operações relacionadas a Registros Financeiros (Receitas e Despesas)"),
                         new Tag().name("Importar Dados").description("Operações relacionadas a Importação de Dados Financeiros"),
                         new Tag().name("Relatorios").description("Operações relacionadas a Relatorios")
                 ))
