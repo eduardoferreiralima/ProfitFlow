@@ -1,0 +1,1763 @@
+[1mdiff --git a/.idea/compiler.xml b/.idea/compiler.xml[m
+[1mindex 98a0073..e07b652 100644[m
+[1m--- a/.idea/compiler.xml[m
+[1m+++ b/.idea/compiler.xml[m
+[36m@@ -2,7 +2,7 @@[m
+ <project version="4">[m
+   <component name="CompilerConfiguration">[m
+     <annotationProcessing>[m
+[31m-      <profile default="true" name="Default" enabled="true" />[m
+[32m+[m[32m      <profile default="true" name="Default" enabled="true" procOnly="true" />[m
+       <profile name="Annotation profile for ProfitFlow" enabled="true">[m
+         <sourceOutputDir name="target/generated-sources/annotations" />[m
+         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/annotations/CPFouCNPJValidator.java b/src/main/java/br/ifrn/edu/ProfitFlow/annotations/CPFouCNPJValidator.java[m
+[1mdeleted file mode 100644[m
+[1mindex d647d3f..0000000[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/annotations/CPFouCNPJValidator.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,28 +0,0 @@[m
+[31m-package br.ifrn.edu.ProfitFlow.annotations;[m
+[31m-[m
+[31m-import jakarta.validation.ConstraintValidator;[m
+[31m-import jakarta.validation.ConstraintValidatorContext;[m
+[31m-import org.hibernate.validator.internal.constraintvalidators.hv.br.CNPJValidator;[m
+[31m-import org.hibernate.validator.internal.constraintvalidators.hv.br.CPFValidator;[m
+[31m-[m
+[31m-public class CPFouCNPJValidator implements ConstraintValidator<CPFouCNPJ, String> {[m
+[31m-[m
+[31m-    private final CPFValidator cpfValidator = new CPFValidator();[m
+[31m-    private final CNPJValidator cnpjValidator = new CNPJValidator();[m
+[31m-[m
+[31m-    @Override[m
+[31m-    public void initialize(CPFouCNPJ constraintAnnotation) {[m
+[31m-        // Inicializa os validadores (obrigatório)[m
+[31m-        cpfValidator.initialize(null);[m
+[31m-        cnpjValidator.initialize(null);[m
+[31m-    }[m
+[31m-[m
+[31m-    @Override[m
+[31m-    public boolean isValid(String value, ConstraintValidatorContext context) {[m
+[31m-        if (value == null || value.isEmpty()) {[m
+[31m-            return true;[m
+[31m-        }[m
+[31m-[m
+[31m-        return cpfValidator.isValid(value, context) || cnpjValidator.isValid(value, context);[m
+[31m-    }[m
+[31m-}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/annotations/CPFouCNPJ.java b/src/main/java/br/ifrn/edu/ProfitFlow/annotations/PhoneIsValid.java[m
+[1msimilarity index 69%[m
+[1mrename from src/main/java/br/ifrn/edu/ProfitFlow/annotations/CPFouCNPJ.java[m
+[1mrename to src/main/java/br/ifrn/edu/ProfitFlow/annotations/PhoneIsValid.java[m
+[1mindex 696de6d..9202709 100644[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/annotations/CPFouCNPJ.java[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/annotations/PhoneIsValid.java[m
+[36m@@ -7,11 +7,12 @@[m [mimport java.lang.annotation.Retention;[m
+ import java.lang.annotation.RetentionPolicy;[m
+ import java.lang.annotation.Target;[m
+ [m
+[31m-@Constraint(validatedBy = CPFouCNPJValidator.class)[m
+[32m+[m[32m@Constraint(validatedBy = PhoneValidator.class)[m
+ @Target({ElementType.FIELD, ElementType.METHOD})[m
+ @Retention(RetentionPolicy.RUNTIME)[m
+[31m-public @interface CPFouCNPJ {[m
+[31m-    String message() default "CPF ou CNPJ inválido!";[m
+[32m+[m[32mpublic @interface PhoneIsValid {[m
+[32m+[m[32m    String message() default "Telefone inválido!";[m
+     Class<?>[] groups() default {};[m
+     Class<? extends Payload>[] payload() default {};[m
+[32m+[m[32m    String regex() default "^\\(?\\d{2}\\)? ?9?\\d{4}-?\\d{4}$";[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/annotations/PhoneValidator.java b/src/main/java/br/ifrn/edu/ProfitFlow/annotations/PhoneValidator.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..cbda1a6[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/annotations/PhoneValidator.java[m
+[36m@@ -0,0 +1,25 @@[m
+[32m+[m[32mpackage br.ifrn.edu.ProfitFlow.annotations;[m
+[32m+[m
+[32m+[m[32mimport jakarta.validation.ConstraintValidator;[m
+[32m+[m[32mimport jakarta.validation.ConstraintValidatorContext;[m
+[32m+[m[32mimport java.util.regex.Pattern;[m
+[32m+[m
+[32m+[m[32mpublic class PhoneValidator implements ConstraintValidator<PhoneIsValid, String> {[m
+[32m+[m
+[32m+[m[32m    private Pattern pattern;[m
+[32m+[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public void initialize(PhoneIsValid annotation) {[m
+[32m+[m[32m        this.pattern = Pattern.compile(annotation.regex());[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public boolean isValid(String value, ConstraintValidatorContext context) {[m
+[32m+[m
+[32m+[m[32m        if (value == null || value.isBlank()) {[m
+[32m+[m[32m            return false;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        return pattern.matcher(value).matches();[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/config/OpenApiConfig.java b/src/main/java/br/ifrn/edu/ProfitFlow/config/OpenApiConfig.java[m
+[1mindex b45418d..e914721 100644[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/config/OpenApiConfig.java[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/config/OpenApiConfig.java[m
+[36m@@ -1,6 +1,5 @@[m
+ package br.ifrn.edu.ProfitFlow.config;[m
+ [m
+[31m-import io.swagger.v3.oas.annotations.OpenAPIDefinition;[m
+ import io.swagger.v3.oas.models.ExternalDocumentation;[m
+ import io.swagger.v3.oas.models.OpenAPI;[m
+ import io.swagger.v3.oas.models.info.Contact;[m
+[36m@@ -8,11 +7,18 @@[m [mimport io.swagger.v3.oas.models.info.Info;[m
+ import io.swagger.v3.oas.models.info.License;[m
+ import io.swagger.v3.oas.models.servers.Server;[m
+ import io.swagger.v3.oas.models.tags.Tag;[m
+[31m-import org.springdoc.core.utils.SpringDocUtils;[m
+ import org.springframework.context.annotation.Bean;[m
+ import org.springframework.context.annotation.Configuration;[m
+[32m+[m[32mimport org.springframework.http.HttpStatus;[m
+[32m+[m[32mimport org.springframework.validation.FieldError;[m
+[32m+[m[32mimport org.springframework.web.bind.MethodArgumentNotValidException;[m
+[32m+[m[32mimport org.springframework.web.bind.annotation.ExceptionHandler;[m
+[32m+[m[32mimport org.springframework.web.bind.annotation.ResponseStatus;[m
+[32m+[m[32mimport org.springframework.web.bind.annotation.RestControllerAdvice;[m
+ [m
+[32m+[m[32mimport java.util.HashMap;[m
+ import java.util.List;[m
+[32m+[m[32mimport java.util.Map;[m
+ [m
+ @Configuration[m
+ public class OpenApiConfig {[m
+[36m@@ -44,9 +50,8 @@[m [mpublic class OpenApiConfig {[m
+                 ))[m
+                 .tags(List.of([m
+                         new Tag().name("Auth").description("Operações relacionadas a Autenticação"),[m
+[31m-                        new Tag().name("Pessoas").description("Operações relacionadas a Clientes e Fornecedores"),[m
+                         new Tag().name("Contas").description("Operações relacionadas a Contas a pagar e a receber"),[m
+[31m-                        new Tag().name("Financeiro").description("Operações relacionadas a Receitas e Despesas"),[m
+[32m+[m[32m                        new Tag().name("Importar Dados").description("Operações relacionadas a Importação de Dados Financeiros"),[m
+                         new Tag().name("Relatorios").description("Operações relacionadas a Relatorios")[m
+                 ))[m
+                 .externalDocs(new ExternalDocumentation()[m
+[36m@@ -55,5 +60,21 @@[m [mpublic class OpenApiConfig {[m
+ [m
+                 );[m
+     }[m
+[32m+[m
+[32m+[m[32m    @RestControllerAdvice // Esta anotação habilita o tratamento global de exceções[m
+[32m+[m[32m    public static class ValidationExceptionHandler {[m
+[32m+[m
+[32m+[m[32m        @ResponseStatus(HttpStatus.BAD_REQUEST) // Garante que o status 400 seja retornado[m
+[32m+[m[32m        @ExceptionHandler(MethodArgumentNotValidException.class)[m
+[32m+[m[32m        public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {[m
+[32m+[m[32m            Map<String, String> errors = new HashMap<>();[m
+[32m+[m[32m            ex.getBindingResult().getAllErrors().forEach((error) -> {[m
+[32m+[m[32m                String fieldName = ((FieldError) error).getField();[m
+[32m+[m[32m                String errorMessage = error.getDefaultMessage();[m
+[32m+[m[32m                errors.put(fieldName, errorMessage);[m
+[32m+[m[32m            });[m
+[32m+[m[32m            return errors;[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+ }[m
+ [m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/config/ValidationExceptionHandler.java b/src/main/java/br/ifrn/edu/ProfitFlow/config/ValidationExceptionHandler.java[m
+[1mdeleted file mode 100644[m
+[1mindex 1723d01..0000000[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/config/ValidationExceptionHandler.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,28 +0,0 @@[m
+[31m-package br.ifrn.edu.ProfitFlow.config;[m
+[31m-[m
+[31m-import org.springframework.http.HttpStatus;[m
+[31m-import org.springframework.validation.FieldError;[m
+[31m-import org.springframework.web.bind.MethodArgumentNotValidException;[m
+[31m-import org.springframework.web.bind.annotation.ExceptionHandler;[m
+[31m-import org.springframework.web.bind.annotation.ResponseStatus;[m
+[31m-import org.springframework.web.bind.annotation.RestControllerAdvice;[m
+[31m-[m
+[31m-import java.util.HashMap;[m
+[31m-import java.util.Map;[m
+[31m-[m
+[31m-@RestControllerAdvice // Esta anotação habilita o tratamento global de exceções[m
+[31m-public class ValidationExceptionHandler {[m
+[31m-[m
+[31m-    @ResponseStatus(HttpStatus.BAD_REQUEST) // Garante que o status 400 seja retornado[m
+[31m-    @ExceptionHandler(MethodArgumentNotValidException.class)[m
+[31m-    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {[m
+[31m-        Map<String, String> errors = new HashMap<>();[m
+[31m-        ex.getBindingResult().getAllErrors().forEach((error) -> {[m
+[31m-            String fieldName = ((FieldError) error).getField();[m
+[31m-            String errorMessage = error.getDefaultMessage();[m
+[31m-            errors.put(fieldName, errorMessage);[m
+[31m-        });[m
+[31m-        return errors;[m
+[31m-    }[m
+[31m-}[m
+[31m-[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/config/docs/PessoaControllerDocs.java b/src/main/java/br/ifrn/edu/ProfitFlow/config/docs/PessoaControllerDocs.java[m
+[1mindex 14abb51..6ac34b1 100644[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/config/docs/PessoaControllerDocs.java[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/config/docs/PessoaControllerDocs.java[m
+[36m@@ -2,7 +2,7 @@[m [mpackage br.ifrn.edu.ProfitFlow.config.docs;[m
+ [m
+ import br.ifrn.edu.ProfitFlow.dto.request.RequestPessoaDTO;[m
+ import br.ifrn.edu.ProfitFlow.dto.response.ResponsePessoaDTO;[m
+[31m-import br.ifrn.edu.ProfitFlow.models.ClienteFornecedor;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.Usuario;[m
+ import io.swagger.v3.oas.annotations.Operation;[m
+ import io.swagger.v3.oas.annotations.Parameter;[m
+ import io.swagger.v3.oas.annotations.responses.ApiResponse;[m
+[36m@@ -20,14 +20,14 @@[m [mpublic interface PessoaControllerDocs {[m
+     @ApiResponses({[m
+             @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")[m
+     })[m
+[31m-    ResponseEntity<List<ClienteFornecedor>> findAll();[m
+[32m+[m[32m    ResponseEntity<List<Usuario>> findAll();[m
+ [m
+     @Operation(summary = "Retorna uma pessoa específica", description = "Busca uma pessoa pelo ID.")[m
+     @ApiResponses({[m
+             @ApiResponse(responseCode = "200", description = "Pessoa encontrada"),[m
+             @ApiResponse(responseCode = "404", description = "Pessoa não encontrada")[m
+     })[m
+[31m-    ResponseEntity<Optional<ClienteFornecedor>> findById([m
+[32m+[m[32m    ResponseEntity<Optional<Usuario>> findById([m
+             @Parameter(description = "ID da pessoa", example = "1") Integer id);[m
+ [m
+     @Operation(summary = "Cadastra uma nova pessoa", description = "Cria um novo cliente ou fornecedor no sistema.")[m
+[36m@@ -61,13 +61,13 @@[m [mpublic interface PessoaControllerDocs {[m
+             @ApiResponse(responseCode = "200", description = "Resultados encontrados"),[m
+             @ApiResponse(responseCode = "404", description = "Nenhuma pessoa encontrada")[m
+     })[m
+[31m-    ResponseEntity<List<ClienteFornecedor>> findByNome([m
+[32m+[m[32m    ResponseEntity<List<Usuario>> findByNome([m
+             @Parameter(description = "Nome, CPF ou CNPJ a ser buscado", example = "João") String nome);[m
+ [m
+     @Operation(summary = "Lista pessoas por tipo", description = "Retorna todas as pessoas de um tipo específico (CLIENTE ou FORNECEDOR).")[m
+     @ApiResponses({[m
+             @ApiResponse(responseCode = "200", description = "Lista filtrada por tipo retornada")[m
+     })[m
+[31m-    ResponseEntity<List<ClienteFornecedor>> findByTipo([m
+[32m+[m[32m    ResponseEntity<List<Usuario>> findByTipo([m
+             @Parameter(description = "Tipo da pessoa (CLIENTE ou FORNECEDOR)", example = "CLIENTE") String tipo);[m
+ }[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/controller/AuthController.java b/src/main/java/br/ifrn/edu/ProfitFlow/controller/AuthController.java[m
+[1mindex deb2d45..6573469 100644[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/controller/AuthController.java[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/controller/AuthController.java[m
+[36m@@ -2,14 +2,28 @@[m [mpackage br.ifrn.edu.ProfitFlow.controller;[m
+ [m
+ [m
+ import br.ifrn.edu.ProfitFlow.config.docs.AuthControllerDocs;[m
+[31m-import io.swagger.v3.oas.annotations.tags.Tag;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.dto.request.RequestPessoaDTO;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.dto.response.ResponsePessoaDTO;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.Usuario;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.services.UsuarioService;[m
+[32m+[m[32mimport jakarta.validation.Valid;[m
+[32m+[m[32mimport org.springframework.beans.factory.annotation.Autowired;[m
+ import org.springframework.http.HttpStatus;[m
+ import org.springframework.http.ResponseEntity;[m
+ import org.springframework.web.bind.annotation.*;[m
+ [m
+[32m+[m[32mimport java.util.List;[m
+[32m+[m[32mimport java.util.Optional;[m
+[32m+[m
+ @RestController[m
+ @RequestMapping("/api/auth")[m
+ public class AuthController implements AuthControllerDocs {[m
+[32m+[m
+[32m+[m
+[32m+[m[32m    @Autowired[m
+[32m+[m[32m    private UsuarioService usuarioService;[m
+[32m+[m
+[32m+[m
+     @PostMapping("/login")[m
+     public ResponseEntity<?> login(@RequestParam String email, @RequestParam String senha){[m
+         return ResponseEntity.ok().build();[m
+[36m@@ -29,4 +43,41 @@[m [mpublic class AuthController implements AuthControllerDocs {[m
+     public ResponseEntity<?> logout(){[m
+         return ResponseEntity.ok().build();[m
+     }[m
+[32m+[m
+[32m+[m
+[32m+[m
+[32m+[m[32m    @GetMapping("/findAll")[m
+[32m+[m[32m    public ResponseEntity<List<Usuario>> findAll(){[m
+[32m+[m[32m        return ResponseEntity.ok(usuarioService.findAll());[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @GetMapping("/{id}")[m
+[32m+[m[32m    public ResponseEntity<Optional<Usuario>> findById(@PathVariable Integer id){[m
+[32m+[m[32m        return ResponseEntity.ok(usuarioService.findById(id));[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @PostMapping("/cadastrar")[m
+[32m+[m[32m    public ResponseEntity<ResponsePessoaDTO> createUser(@Valid @RequestBody RequestPessoaDTO pessoaDTO) throws Exception {[m
+[32m+[m[32m        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.createUser(pessoaDTO));[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @PutMapping("/{id}")[m
+[32m+[m[32m    public ResponseEntity<ResponsePessoaDTO> update(@PathVariable Integer id, @RequestBody RequestPessoaDTO pessoaDTO){[m
+[32m+[m[32m        return ResponseEntity.ok(null);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @DeleteMapping("/{id}")[m
+[32m+[m[32m    public ResponseEntity<ResponsePessoaDTO> delete(@PathVariable Integer id){[m
+[32m+[m[32m        return ResponseEntity.ok(null);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @GetMapping("/search")[m
+[32m+[m[32m    public ResponseEntity<List<Usuario>> findByNome(@RequestParam String nome){[m
+[32m+[m[32m        return ResponseEntity.ok(null);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @GetMapping("/tipo/{tipo}")[m
+[32m+[m[32m    public ResponseEntity<List<Usuario>> findByTipo(@PathVariable String tipo){[m
+[32m+[m[32m        return ResponseEntity.ok(null);[m
+[32m+[m[32m    }[m
+ }[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/controller/ClienteFornecedorController.java b/src/main/java/br/ifrn/edu/ProfitFlow/controller/ClienteFornecedorController.java[m
+[1mdeleted file mode 100644[m
+[1mindex 7607cd0..0000000[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/controller/ClienteFornecedorController.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,63 +0,0 @@[m
+[31m-package br.ifrn.edu.ProfitFlow.controller;[m
+[31m-[m
+[31m-[m
+[31m-import br.ifrn.edu.ProfitFlow.config.docs.PessoaControllerDocs;[m
+[31m-import br.ifrn.edu.ProfitFlow.dto.request.RequestPessoaDTO;[m
+[31m-import br.ifrn.edu.ProfitFlow.dto.response.ResponsePessoaDTO;[m
+[31m-import br.ifrn.edu.ProfitFlow.models.ClienteFornecedor;[m
+[31m-import br.ifrn.edu.ProfitFlow.services.ClienteFornecedorService;[m
+[31m-import io.swagger.v3.oas.annotations.tags.Tag;[m
+[31m-import jakarta.validation.Valid;[m
+[31m-import org.springframework.beans.factory.annotation.Autowired;[m
+[31m-import org.springframework.http.HttpStatus;[m
+[31m-import org.springframework.http.ResponseEntity;[m
+[31m-import org.springframework.web.bind.annotation.*;[m
+[31m-[m
+[31m-import java.util.List;[m
+[31m-import java.util.Optional;[m
+[31m-[m
+[31m-@RestController[m
+[31m-@RequestMapping("/api/pessoas")[m
+[31m-public class ClienteFornecedorController implements PessoaControllerDocs {[m
+[31m-[m
+[31m-    @Autowired[m
+[31m-    private ClienteFornecedorService clienteFornecedorService;[m
+[31m-[m
+[31m-[m
+[31m-    @GetMapping[m
+[31m-    public ResponseEntity<List<ClienteFornecedor>> findAll(){[m
+[31m-        return ResponseEntity.ok(clienteFornecedorService.findAll());[m
+[31m-    }[m
+[31m-[m
+[31m-    @GetMapping("/{id}")[m
+[31m-    public ResponseEntity<Optional<ClienteFornecedor>> findById(@PathVariable Integer id){[m
+[31m-        return ResponseEntity.ok(clienteFornecedorService.findById(id));[m
+[31m-    }[m
+[31m-[m
+[31m-    @PostMapping[m
+[31m-    public ResponseEntity<ResponsePessoaDTO> save(@Valid @RequestBody RequestPessoaDTO pessoaDTO) throws Exception {[m
+[31m-        return ResponseEntity.status(HttpStatus.CREATED).body(clienteFornecedorService.salvar(pessoaDTO));[m
+[31m-    }[m
+[31m-[m
+[31m-    @PutMapping("/{id}")[m
+[31m-    public ResponseEntity<ResponsePessoaDTO> update(@PathVariable Integer id, @RequestBody RequestPessoaDTO pessoaDTO){[m
+[31m-        return ResponseEntity.ok(null);[m
+[31m-    }[m
+[31m-[m
+[31m-    @DeleteMapping("/{id}")[m
+[31m-    public ResponseEntity<ResponsePessoaDTO> delete(@PathVariable Integer id){[m
+[31m-        return ResponseEntity.ok(null);[m
+[31m-    }[m
+[31m-[m
+[31m-    @GetMapping("/search")[m
+[31m-    public ResponseEntity<List<ClienteFornecedor>> findByNome(@RequestParam String nome){[m
+[31m-        return ResponseEntity.ok(null);[m
+[31m-    }[m
+[31m-[m
+[31m-    @GetMapping("/tipo/{tipo}")[m
+[31m-    public ResponseEntity<List<ClienteFornecedor>> findByTipo(@PathVariable String tipo){[m
+[31m-        return ResponseEntity.ok(null);[m
+[31m-    }[m
+[31m-[m
+[31m-[m
+[31m-}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/controller/ContasController.java b/src/main/java/br/ifrn/edu/ProfitFlow/controller/ContaController.java[m
+[1msimilarity index 93%[m
+[1mrename from src/main/java/br/ifrn/edu/ProfitFlow/controller/ContasController.java[m
+[1mrename to src/main/java/br/ifrn/edu/ProfitFlow/controller/ContaController.java[m
+[1mindex 834d390..442ccb9 100644[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/controller/ContasController.java[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/controller/ContaController.java[m
+[36m@@ -4,7 +4,7 @@[m [mpackage br.ifrn.edu.ProfitFlow.controller;[m
+ import br.ifrn.edu.ProfitFlow.config.docs.ContasControllerDocs;[m
+ import br.ifrn.edu.ProfitFlow.dto.request.RequestRegistroFinanceiroDTO;[m
+ import br.ifrn.edu.ProfitFlow.dto.response.ResponseRegistroFinanceiroDTO;[m
+[31m-import br.ifrn.edu.ProfitFlow.services.ContasService;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.services.RegistroFinanceiroService;[m
+ import org.springframework.beans.factory.annotation.Autowired;[m
+ import org.springframework.http.HttpStatus;[m
+ import org.springframework.http.ResponseEntity;[m
+[36m@@ -14,10 +14,10 @@[m [mimport java.util.List;[m
+ [m
+ @RestController[m
+ @RequestMapping("/api/financeiro")[m
+[31m-public class ContasController implements ContasControllerDocs {[m
+[32m+[m[32mpublic class ContaController implements ContasControllerDocs {[m
+ [m
+     @Autowired[m
+[31m-    private ContasService contasService;[m
+[32m+[m[32m    private ContaService contasService;[m
+ [m
+     @GetMapping[m
+     public ResponseEntity<List<ResponseContaDTO>> getContas(){[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/controller/RelatoriosController.java b/src/main/java/br/ifrn/edu/ProfitFlow/controller/RelatoriosController.java[m
+[1mindex 8f30cbd..dc35ee0 100644[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/controller/RelatoriosController.java[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/controller/RelatoriosController.java[m
+[36m@@ -1,12 +1,9 @@[m
+ package br.ifrn.edu.ProfitFlow.controller;[m
+ [m
+ import br.ifrn.edu.ProfitFlow.config.docs.RelatoriosControllerDocs;[m
+[31m-import io.swagger.v3.oas.annotations.tags.Tag;[m
+ import org.springframework.http.ResponseEntity;[m
+ import org.springframework.web.bind.annotation.*;[m
+[31m-[m
+ import java.time.LocalDate;[m
+[31m-import java.time.LocalDateTime;[m
+ [m
+ @RestController[m
+ @RequestMapping("/api/relatorios")[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/dto/request/PessoaFisicaCreateDTO.java b/src/main/java/br/ifrn/edu/ProfitFlow/dto/request/PessoaFisicaCreateDTO.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..e0ce5ef[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/dto/request/PessoaFisicaCreateDTO.java[m
+[36m@@ -0,0 +1,17 @@[m
+[32m+[m[32mpackage br.ifrn.edu.ProfitFlow.dto.request;[m
+[32m+[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.enums.PessoaGenero;[m
+[32m+[m[32mimport lombok.Getter;[m
+[32m+[m[32mimport lombok.Setter;[m
+[32m+[m
+[32m+[m[32m@Getter[m
+[32m+[m[32m@Setter[m
+[32m+[m[32mpublic class PessoaFisicaCreateDTO {[m
+[32m+[m[32m    private String nome;[m
+[32m+[m[32m    private String email;[m
+[32m+[m[32m    private String senha;[m
+[32m+[m[32m    private String telefone;[m
+[32m+[m[32m    private String endereco;[m
+[32m+[m[32m    private String cpf;[m
+[32m+[m[32m    private PessoaGenero genero;[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/dto/request/RequestContaDTO.java b/src/main/java/br/ifrn/edu/ProfitFlow/dto/request/RequestContaDTO.java[m
+[1mindex d6ddd9b..02a8a59 100644[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/dto/request/RequestContaDTO.java[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/dto/request/RequestContaDTO.java[m
+[36m@@ -1,6 +1,5 @@[m
+ package br.ifrn.edu.ProfitFlow.dto.request;[m
+ [m
+[31m-import br.ifrn.edu.ProfitFlow.models.ClienteFornecedor;[m
+ import br.ifrn.edu.ProfitFlow.models.enums.ContaStatus;[m
+ import br.ifrn.edu.ProfitFlow.models.enums.ContaTipo;[m
+ import lombok.Getter;[m
+[36m@@ -13,14 +12,12 @@[m [mimport java.time.LocalDate;[m
+ public class RequestContaDTO {[m
+ [m
+     private String descricao;[m
+[31m-    private BigDecimal valor;[m
+[31m-[m
+[31m-    private LocalDate dataVencimento;[m
+[31m-    private LocalDate dataPagamento;[m
+[31m-[m
+[32m+[m[32m    private String categoria;[m
+     private ContaTipo tipo;[m
+     private ContaStatus status;[m
+[31m-[m
+[31m-    private Integer clienteFornecedorId;[m
+[32m+[m[32m    private BigDecimal valor;[m
+[32m+[m[32m    private LocalDate dataPrevista;    // vencimento/prevista[m
+[32m+[m[32m    private LocalDate dataPagamento;   // pagamento/recebimento[m
+[32m+[m[32m    private Integer pessoaId;[m
+ [m
+ }[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/dto/request/RequestDespesaDTO.java b/src/main/java/br/ifrn/edu/ProfitFlow/dto/request/RequestDespesaDTO.java[m
+[1mdeleted file mode 100644[m
+[1mindex e7e2359..0000000[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/dto/request/RequestDespesaDTO.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,20 +0,0 @@[m
+[31m-package br.ifrn.edu.ProfitFlow.dto.request;[m
+[31m-[m
+[31m-import br.ifrn.edu.ProfitFlow.models.enums.ReceitaStatus;[m
+[31m-import lombok.Getter;[m
+[31m-import lombok.Setter;[m
+[31m-[m
+[31m-import java.math.BigDecimal;[m
+[31m-import java.time.LocalDate;[m
+[31m-[m
+[31m-@Getter[m
+[31m-@Setter[m
+[31m-public class RequestDespesaDTO {[m
+[31m-    private String descricao;[m
+[31m-    private String categoria;[m
+[31m-    private ReceitaStatus status;[m
+[31m-    private BigDecimal valor;[m
+[31m-    private LocalDate dataPagamento;[m
+[31m-    private LocalDate dataVencimento;[m
+[31m-    private Integer fornecedorId;[m
+[31m-}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/dto/request/RequestReceitaDTO.java b/src/main/java/br/ifrn/edu/ProfitFlow/dto/request/RequestReceitaDTO.java[m
+[1mdeleted file mode 100644[m
+[1mindex 671c72d..0000000[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/dto/request/RequestReceitaDTO.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,19 +0,0 @@[m
+[31m-package br.ifrn.edu.ProfitFlow.dto.request;[m
+[31m-[m
+[31m-import br.ifrn.edu.ProfitFlow.models.enums.ReceitaStatus;[m
+[31m-import lombok.Getter;[m
+[31m-import lombok.Setter;[m
+[31m-import java.math.BigDecimal;[m
+[31m-import java.time.LocalDate;[m
+[31m-[m
+[31m-@Getter[m
+[31m-@Setter[m
+[31m-public class RequestReceitaDTO {[m
+[31m-    private String descricao;[m
+[31m-    private String categoria;[m
+[31m-    private ReceitaStatus status;[m
+[31m-    private BigDecimal valor;[m
+[31m-    private LocalDate dataRecebimento;[m
+[31m-    private LocalDate dataPrevista;[m
+[31m-    private Integer clienteId;[m
+[31m-}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/dto/response/ResponseContaDTO.java b/src/main/java/br/ifrn/edu/ProfitFlow/dto/response/ResponseContaDTO.java[m
+[1mindex f971627..9c71a41 100644[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/dto/response/ResponseContaDTO.java[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/dto/response/ResponseContaDTO.java[m
+[36m@@ -1,28 +1,24 @@[m
+ package br.ifrn.edu.ProfitFlow.dto.response;[m
+ [m
+[31m-import br.ifrn.edu.ProfitFlow.models.ClienteFornecedor;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.Usuario;[m
+ import br.ifrn.edu.ProfitFlow.models.enums.ContaStatus;[m
+ import br.ifrn.edu.ProfitFlow.models.enums.ContaTipo;[m
+[31m-import jakarta.persistence.*;[m
+ import lombok.Getter;[m
+ import lombok.Setter;[m
+[31m-[m
+ import java.math.BigDecimal;[m
+ import java.time.LocalDate;[m
+[31m-import java.time.LocalDateTime;[m
+ [m
+ @Getter @Setter[m
+ public class ResponseContaDTO {[m
+ [m
+     private int id;[m
+     private String descricao;[m
+[31m-    private BigDecimal valor;[m
+[31m-    private LocalDate dataVencimento;[m
+[31m-    private LocalDate dataPagamento;[m
+[31m-    private LocalDateTime dataCriacao;[m
+[31m-    private LocalDateTime dataAtualizacao;[m
+[32m+[m[32m    private String categoria;[m
+     private ContaTipo tipo;[m
+     private ContaStatus status;[m
+[31m-    private ClienteFornecedor clienteFornecedor;[m
+[32m+[m[32m    private BigDecimal valor;[m
+[32m+[m[32m    private LocalDate dataPrevista;    // vencimento/prevista[m
+[32m+[m[32m    private LocalDate dataPagamento;   // pagamento/recebimento[m
+[32m+[m[32m    private Usuario pessoa;[m
+ [m
+ }[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/dto/response/ResponseDespesaDTO.java b/src/main/java/br/ifrn/edu/ProfitFlow/dto/response/ResponseDespesaDTO.java[m
+[1mdeleted file mode 100644[m
+[1mindex bb8cb4b..0000000[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/dto/response/ResponseDespesaDTO.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,26 +0,0 @@[m
+[31m-package br.ifrn.edu.ProfitFlow.dto.response;[m
+[31m-[m
+[31m-import br.ifrn.edu.ProfitFlow.models.ClienteFornecedor;[m
+[31m-import br.ifrn.edu.ProfitFlow.models.enums.ReceitaStatus;[m
+[31m-import lombok.Getter;[m
+[31m-import lombok.Setter;[m
+[31m-[m
+[31m-import java.math.BigDecimal;[m
+[31m-import java.time.LocalDate;[m
+[31m-[m
+[31m-@Getter @Setter[m
+[31m-public class ResponseDespesaDTO {[m
+[31m-    private int id;[m
+[31m-[m
+[31m-    private String descricao;[m
+[31m-    private String categoria;[m
+[31m-[m
+[31m-    private ReceitaStatus status;[m
+[31m-[m
+[31m-    private BigDecimal valor;[m
+[31m-[m
+[31m-    private LocalDate dataPagamento;[m
+[31m-    private LocalDate dataVencimento;[m
+[31m-[m
+[31m-    private ClienteFornecedor fornecedor;[m
+[31m-}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/dto/response/ResponseReceitaDTO.java b/src/main/java/br/ifrn/edu/ProfitFlow/dto/response/ResponseReceitaDTO.java[m
+[1mdeleted file mode 100644[m
+[1mindex c6b47ad..0000000[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/dto/response/ResponseReceitaDTO.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,26 +0,0 @@[m
+[31m-package br.ifrn.edu.ProfitFlow.dto.response;[m
+[31m-[m
+[31m-import br.ifrn.edu.ProfitFlow.models.ClienteFornecedor;[m
+[31m-import br.ifrn.edu.ProfitFlow.models.enums.ReceitaStatus;[m
+[31m-import lombok.Getter;[m
+[31m-import lombok.Setter;[m
+[31m-[m
+[31m-import java.math.BigDecimal;[m
+[31m-import java.time.LocalDate;[m
+[31m-[m
+[31m-@Getter @Setter[m
+[31m-public class ResponseReceitaDTO {[m
+[31m-    private int id;[m
+[31m-[m
+[31m-    private String descricao;[m
+[31m-    private String categoria;[m
+[31m-[m
+[31m-    private ReceitaStatus status;[m
+[31m-[m
+[31m-    private BigDecimal valor;[m
+[31m-[m
+[31m-    private LocalDate dataRecebimento;[m
+[31m-    private LocalDate dataPrevista;[m
+[31m-[m
+[31m-    private ClienteFornecedor cliente;[m
+[31m-}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/mapper/MapperConta.java b/src/main/java/br/ifrn/edu/ProfitFlow/mapper/MapperConta.java[m
+[1mindex 29a85c6..4d6e40f 100644[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/mapper/MapperConta.java[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/mapper/MapperConta.java[m
+[36m@@ -2,38 +2,45 @@[m [mpackage br.ifrn.edu.ProfitFlow.mapper;[m
+ [m
+ import br.ifrn.edu.ProfitFlow.dto.request.RequestRegistroFinanceiroDTO;[m
+ import br.ifrn.edu.ProfitFlow.dto.response.ResponseRegistroFinanceiroDTO;[m
+[31m-import br.ifrn.edu.ProfitFlow.models.Contas;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.RegistroFinanceiro;[m
+ import org.mapstruct.Mapper;[m
+ import org.mapstruct.Mapping;[m
+[32m+[m[32mimport org.mapstruct.MappingTarget;[m
+[32m+[m
+[32m+[m[32mimport java.util.List;[m
+ [m
+ @Mapper(componentModel = "spring")[m
+ public interface MapperConta {[m
+ [m
+     @Mapping(source = "descricao", target = "descricao")[m
+[31m-    @Mapping(source = "valor", target = "valor")[m
+[31m-    @Mapping(source = "dataVencimento", target = "dataVencimento")[m
+[31m-    @Mapping(source = "dataPagamento", target = "dataPagamento")[m
+[32m+[m[32m    @Mapping(source = "categoria", target = "categoria")[m
+     @Mapping(source = "tipo", target = "tipo")[m
+     @Mapping(source = "status", target = "status")[m
+[31m-    @Mapping(source = "clienteFornecedorId", target = "clienteFornecedor")[m
+[31m-    Contas mapContaDtoToContas(RequestContaDTO c);[m
+[31m-[m
+[31m-    @Mapping(source = "descricao", target = "descricao")[m
+     @Mapping(source = "valor", target = "valor")[m
+[31m-    @Mapping(source = "dataVencimento", target = "dataVencimento")[m
+[32m+[m[32m    @Mapping(source = "dataPrevista", target = "dataPrevista")[m
+     @Mapping(source = "dataPagamento", target = "dataPagamento")[m
+[32m+[m[32m    Conta mapContaDtoToConta(RequestContaDTO c);[m
+[32m+[m
+[32m+[m[32m    @Mapping(source = "descricao", target = "descricao")[m
+[32m+[m[32m    @Mapping(source = "categoria", target = "categoria")[m
+     @Mapping(source = "tipo", target = "tipo")[m
+     @Mapping(source = "status", target = "status")[m
+[31m-    @Mapping(source = "clienteFornecedor", target = "clienteFornecedorId")[m
+[31m-    RequestContaDTO mapContasToRequestContaDTO(Contas c);[m
+[32m+[m[32m    @Mapping(source = "valor", target = "valor")[m
+[32m+[m[32m    @Mapping(source = "dataPrevista", target = "dataPrevista")[m
+[32m+[m[32m    @Mapping(source = "dataPagamento", target = "dataPagamento")[m
+[32m+[m[32m    RequestContaDTO mapContaToRequestContaDTO(Conta c);[m
+ [m
+     @Mapping(source = "id", target = "id")[m
+     @Mapping(source = "descricao", target = "descricao")[m
+[31m-    @Mapping(source = "valor", target = "valor")[m
+[31m-    @Mapping(source = "dataVencimento", target = "dataVencimento")[m
+[31m-    @Mapping(source = "dataPagamento", target = "dataPagamento")[m
+[32m+[m[32m    @Mapping(source = "categoria", target = "categoria")[m
+     @Mapping(source = "tipo", target = "tipo")[m
+     @Mapping(source = "status", target = "status")[m
+[31m-    @Mapping(source = "clienteFornecedor", target = "clienteFornecedorId")[m
+[31m-    ResponseContaDTO mapContasToResponseContaDTO(Contas c);[m
+[32m+[m[32m    @Mapping(source = "valor", target = "valor")[m
+[32m+[m[32m    @Mapping(source = "dataPrevista", target = "dataPrevista")[m
+[32m+[m[32m    @Mapping(source = "dataPagamento", target = "dataPagamento")[m
+[32m+[m[32m    ResponseContaDTO mapContaToResponseContaDTO(Conta c);[m
+[32m+[m
+[32m+[m[32m    List<ResponseContaDTO> toResponseContaDTOList(List<Conta> registroFinanceiros);[m
+[32m+[m
+[32m+[m[32m    void updateContaFromDTO(RequestContaDTO dto, @MappingTarget Conta c);[m
+ }[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/mapper/MapperDespesa.java b/src/main/java/br/ifrn/edu/ProfitFlow/mapper/MapperDespesa.java[m
+[1mdeleted file mode 100644[m
+[1mindex d202470..0000000[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/mapper/MapperDespesa.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,43 +0,0 @@[m
+[31m-package br.ifrn.edu.ProfitFlow.mapper;[m
+[31m-[m
+[31m-import br.ifrn.edu.ProfitFlow.dto.request.RequestReceitaDTO;[m
+[31m-import br.ifrn.edu.ProfitFlow.dto.response.ResponseReceitaDTO;[m
+[31m-import br.ifrn.edu.ProfitFlow.models.Receita;[m
+[31m-import br.ifrn.edu.ProfitFlow.models.enums.ReceitaStatus;[m
+[31m-import org.mapstruct.Mapper;[m
+[31m-import org.mapstruct.Mapping;[m
+[31m-[m
+[31m-import java.math.BigDecimal;[m
+[31m-import java.time.LocalDate;[m
+[31m-[m
+[31m-@Mapper(componentModel = "spring")[m
+[31m-public interface MapperDespesa {[m
+[31m-[m
+[31m-    @Mapping(source = "descricao", target = "descricao")[m
+[31m-    @Mapping(source = "categoria", target = "categoria")[m
+[31m-    @Mapping(source = "status", target = "status")[m
+[31m-    @Mapping(source = "valor", target = "valor")[m
+[31m-    @Mapping(source = "dataPagamento", target = "dataPagamento")[m
+[31m-    @Mapping(source = "dataVencimento", target = "dataVencimento")[m
+[31m-    @Mapping(source = "fornecedorId", target = "fonecedor")[m
+[31m-    Receita mapRequestDespesaDTOtoDespesa(RequestReceitaDTO receita);[m
+[31m-[m
+[31m-    @Mapping(source = "descricao", target = "descricao")[m
+[31m-    @Mapping(source = "categoria", target = "categoria")[m
+[31m-    @Mapping(source = "status", target = "status")[m
+[31m-    @Mapping(source = "valor", target = "valor")[m
+[31m-    @Mapping(source = "dataPagamento", target = "dataPagamento")[m
+[31m-    @Mapping(source = "dataVencimento", target = "dataVencimento")[m
+[31m-    @Mapping(source = "fornecedor", target = "fornecedorId")[m
+[31m-    RequestReceitaDTO mapDespesaToRequestDespesaDTO(Receita receita);[m
+[31m-[m
+[31m-    @Mapping(source = "id", target = "id")[m
+[31m-    @Mapping(source = "descricao", target = "descricao")[m
+[31m-    @Mapping(source = "categoria", target = "categoria")[m
+[31m-    @Mapping(source = "status", target = "status")[m
+[31m-    @Mapping(source = "valor", target = "valor")[m
+[31m-    @Mapping(source = "dataPagamento", target = "dataPagamento")[m
+[31m-    @Mapping(source = "dataVencimento", target = "dataVencimento")[m
+[31m-    @Mapping(source = "fornecedor", target = "fornecedor")[m
+[31m-    ResponseReceitaDTO mapDespesaToResponseDespesaDTO(Receita receita);[m
+[31m-}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/mapper/MapperReceita.java b/src/main/java/br/ifrn/edu/ProfitFlow/mapper/MapperReceita.java[m
+[1mdeleted file mode 100644[m
+[1mindex c5221c6..0000000[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/mapper/MapperReceita.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,39 +0,0 @@[m
+[31m-package br.ifrn.edu.ProfitFlow.mapper;[m
+[31m-[m
+[31m-import br.ifrn.edu.ProfitFlow.dto.request.RequestReceitaDTO;[m
+[31m-import br.ifrn.edu.ProfitFlow.dto.response.ResponseReceitaDTO;[m
+[31m-import br.ifrn.edu.ProfitFlow.models.Receita;[m
+[31m-import org.mapstruct.Mapper;[m
+[31m-import org.mapstruct.Mapping;[m
+[31m-[m
+[31m-@Mapper(componentModel = "spring")[m
+[31m-public interface MapperReceita {[m
+[31m-[m
+[31m-    @Mapping(source = "descricao", target = "descricao")[m
+[31m-    @Mapping(source = "categoria", target = "categoria")[m
+[31m-    @Mapping(source = "status", target = "status")[m
+[31m-    @Mapping(source = "valor", target = "valor")[m
+[31m-    @Mapping(source = "dataRecebimento", target = "dataRecebimento")[m
+[31m-    @Mapping(source = "dataPrevista", target = "dataPrevista")[m
+[31m-    @Mapping(source = "clientId", target = "cliente")[m
+[31m-    Receita mapRequestReceitaDTOtoReceita(RequestReceitaDTO receita);[m
+[31m-[m
+[31m-    @Mapping(source = "descricao", target = "descricao")[m
+[31m-    @Mapping(source = "categoria", target = "categoria")[m
+[31m-    @Mapping(source = "status", target = "status")[m
+[31m-    @Mapping(source = "valor", target = "valor")[m
+[31m-    @Mapping(source = "dataRecebimento", target = "dataRecebimento")[m
+[31m-    @Mapping(source = "dataPrevista", target = "dataPrevista")[m
+[31m-    @Mapping(source = "cliente", target = "clientId")[m
+[31m-    RequestReceitaDTO mapReceitaToRequestReceitaDTO(Receita receita);[m
+[31m-[m
+[31m-    @Mapping(source = "id", target = "id")[m
+[31m-    @Mapping(source = "descricao", target = "descricao")[m
+[31m-    @Mapping(source = "categoria", target = "categoria")[m
+[31m-    @Mapping(source = "status", target = "status")[m
+[31m-    @Mapping(source = "valor", target = "valor")[m
+[31m-    @Mapping(source = "dataRecebimento", target = "dataRecebimento")[m
+[31m-    @Mapping(source = "dataPrevista", target = "dataPrevista")[m
+[31m-    @Mapping(source = "cliente", target = "clientId")[m
+[31m-    ResponseReceitaDTO mapReceitaToResponseReceitaDTO(Receita receita);[m
+[31m-}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/mapper/MapperUsuario.java b/src/main/java/br/ifrn/edu/ProfitFlow/mapper/MapperUsuario.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..26f2bfd[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/mapper/MapperUsuario.java[m
+[36m@@ -0,0 +1,23 @@[m
+[32m+[m[32mpackage br.ifrn.edu.ProfitFlow.mapper;[m
+[32m+[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.dto.request.RequestPessoaDTO;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.dto.response.ResponsePessoaDTO;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.PessoaFisica;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.PessoaJuridica;[m
+[32m+[m[32mimport org.mapstruct.Mapper;[m
+[32m+[m[32mimport org.mapstruct.Mapping;[m
+[32m+[m
+[32m+[m[32m@Mapper(componentModel = "spring")[m
+[32m+[m[32mpublic interface MapperUsuario {[m
+[32m+[m[32m    @Mapping(target = "cpf", source = "cpfCnpj")[m
+[32m+[m[32m    PessoaFisica toEntityPessoaFisica(RequestPessoaDTO dto);[m
+[32m+[m
+[32m+[m[32m    @Mapping(target = "cnpj", source = "cpfCnpj")[m
+[32m+[m[32m    PessoaJuridica toEntityPessoaJuridica(RequestPessoaDTO dto);[m
+[32m+[m
+[32m+[m[32m    @Mapping(target = "cpfCnpj", source = "cpf")[m
+[32m+[m[32m    ResponsePessoaDTO mapPFtoResponsePessoaDTO(PessoaFisica pf);[m
+[32m+[m
+[32m+[m[32m    @Mapping(target = "cpfCnpj", source = "cnpj")[m
+[32m+[m[32m    ResponsePessoaDTO mapPJtoResponsePessoaDTO(PessoaJuridica pf);[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/models/ClienteFornecedor.java b/src/main/java/br/ifrn/edu/ProfitFlow/models/ClienteFornecedor.java[m
+[1mdeleted file mode 100644[m
+[1mindex d395d07..0000000[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/models/ClienteFornecedor.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,36 +0,0 @@[m
+[31m-package br.ifrn.edu.ProfitFlow.models;[m
+[31m-[m
+[31m-[m
+[31m-import br.ifrn.edu.ProfitFlow.models.enums.PessoaTipo;[m
+[31m-import jakarta.persistence.*;[m
+[31m-import jakarta.validation.constraints.Pattern;[m
+[31m-import lombok.Getter;[m
+[31m-import lombok.Setter;[m
+[31m-[m
+[31m-[m
+[31m-@Entity[m
+[31m-@Getter @Setter[m
+[31m-public class ClienteFornecedor {[m
+[31m-    private static final String REGEX_TELEFONE_BRASIL = "^\\(?[1-9]{2}\\)? ?(?:[2-8]|9[1-9])[0-9]{3}\\-?[0-9]{4}$";[m
+[31m-[m
+[31m-    @Id[m
+[31m-    @GeneratedValue(strategy = GenerationType.IDENTITY)[m
+[31m-    private int id;[m
+[31m-[m
+[31m-[m
+[31m-    @Column(unique = true)[m
+[31m-    private String cpfCnpj;[m
+[31m-[m
+[31m-    @Pattern(regexp = REGEX_TELEFONE_BRASIL, message = "Telefone inválido. Use um formato como (XX) 9XXXX-XXXX.")[m
+[31m-    private String telefone;[m
+[31m-[m
+[31m-    private String endereco;[m
+[31m-[m
+[31m-    @Enumerated(EnumType.STRING)[m
+[31m-    private PessoaTipo pessoa;[m
+[31m-[m
+[31m-    @ManyToOne[m
+[31m-    @JoinColumn(name = "usuario_id")[m
+[31m-    private Usuario usuario;[m
+[31m-[m
+[31m-}[m
+\ No newline at end of file[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/models/Contas.java b/src/main/java/br/ifrn/edu/ProfitFlow/models/Conta.java[m
+[1msimilarity index 61%[m
+[1mrename from src/main/java/br/ifrn/edu/ProfitFlow/models/Contas.java[m
+[1mrename to src/main/java/br/ifrn/edu/ProfitFlow/models/Conta.java[m
+[1mindex 610b404..097d00e 100644[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/models/Contas.java[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/models/Conta.java[m
+[36m@@ -12,29 +12,27 @@[m [mimport java.time.LocalDateTime;[m
+ [m
+ @Entity[m
+ @Getter @Setter[m
+[31m-public class Contas {[m
+[32m+[m[32mpublic class Conta {[m
+     @Id[m
+     @GeneratedValue(strategy = GenerationType.IDENTITY)[m
+[31m-    private int id;[m
+[32m+[m[32m    private Long id;[m
+ [m
+     private String descricao;[m
+[31m-[m
+[31m-    @Column(precision = 10, scale = 2, nullable = false)[m
+[31m-    private BigDecimal valor;[m
+[31m-[m
+[31m-    private LocalDate dataVencimento;[m
+[31m-    private LocalDate dataPagamento;[m
+[31m-    private LocalDateTime dataCriacao;[m
+[31m-    private LocalDateTime dataAtualizacao;[m
+[32m+[m[32m    private String categoria;[m
+ [m
+     @Enumerated(EnumType.STRING)[m
+[31m-    private ContaTipo tipo;[m
+[32m+[m[32m    private ContaTipo tipo; // RECEITA ou DESPESA[m
+ [m
+     @Enumerated(EnumType.STRING)[m
+[31m-    private ContaStatus status;[m
+[32m+[m[32m    private ContaStatus status; // PENDENTE | PAGO | ATRASADO[m
+ [m
+[31m-    @ManyToOne[m
+[31m-    @JoinColumn(name = "cliente_fornecedor_id")[m
+[31m-    private ClienteFornecedor clienteFornecedor;[m
+[32m+[m[32m    @Column(precision = 10, scale = 2, nullable = false)[m
+[32m+[m[32m    private BigDecimal valor;[m
+ [m
+[32m+[m[32m    private LocalDate dataPrevista;    // vencimento/prevista[m
+[32m+[m[32m    private LocalDate dataPagamento;   // pagamento/recebimento[m
+[32m+[m
+[32m+[m[32m    @ManyToOne[m
+[32m+[m[32m    @JoinColumn(name = "usuario_id")[m
+[32m+[m[32m    private Usuario pessoa;[m
+ }[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/models/Despesa.java b/src/main/java/br/ifrn/edu/ProfitFlow/models/Despesa.java[m
+[1mdeleted file mode 100644[m
+[1mindex c664188..0000000[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/models/Despesa.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,36 +0,0 @@[m
+[31m-package br.ifrn.edu.ProfitFlow.models;[m
+[31m-[m
+[31m-import br.ifrn.edu.ProfitFlow.models.enums.DespesaStatus;[m
+[31m-import jakarta.persistence.*;[m
+[31m-import lombok.Getter;[m
+[31m-import lombok.Setter;[m
+[31m-[m
+[31m-import java.math.BigDecimal;[m
+[31m-import java.time.LocalDate;[m
+[31m-[m
+[31m-@Entity[m
+[31m-@Getter @Setter[m
+[31m-public class Despesa {[m
+[31m-    @Id[m
+[31m-    @GeneratedValue(strategy = GenerationType.IDENTITY)[m
+[31m-    private int id;[m
+[31m-[m
+[31m-[m
+[31m-    private String descricao;[m
+[31m-    private String categoria;[m
+[31m-[m
+[31m-    @Enumerated(EnumType.STRING)[m
+[31m-    private DespesaStatus status;[m
+[31m-[m
+[31m-    @Column(precision = 10, scale = 2, nullable = false)[m
+[31m-    private BigDecimal valor;[m
+[31m-[m
+[31m-    private LocalDate dataPagamento;[m
+[31m-    private LocalDate dataVencimento;[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-    @ManyToOne[m
+[31m-    @JoinColumn(name = "fornecedor_id")[m
+[31m-    private ClienteFornecedor fornecedor;[m
+[31m-}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/models/PessoaFisica.java b/src/main/java/br/ifrn/edu/ProfitFlow/models/PessoaFisica.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..60c254f[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/models/PessoaFisica.java[m
+[36m@@ -0,0 +1,23 @@[m
+[32m+[m[32mpackage br.ifrn.edu.ProfitFlow.models;[m
+[32m+[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.enums.PessoaGenero;[m
+[32m+[m[32mimport jakarta.persistence.Column;[m
+[32m+[m[32mimport jakarta.persistence.Entity;[m
+[32m+[m[32mimport jakarta.persistence.EnumType;[m
+[32m+[m[32mimport jakarta.persistence.Enumerated;[m
+[32m+[m[32mimport lombok.Getter;[m
+[32m+[m[32mimport lombok.Setter;[m
+[32m+[m[32mimport org.hibernate.validator.constraints.br.CPF;[m
+[32m+[m
+[32m+[m[32m@Entity[m
+[32m+[m[32m@Getter @Setter[m
+[32m+[m[32mpublic class PessoaFisica extends Usuario {[m
+[32m+[m
+[32m+[m[32m    @CPF[m
+[32m+[m[32m    @Column(unique = true)[m
+[32m+[m[32m    private String cpf;[m
+[32m+[m
+[32m+[m[32m    @Enumerated(EnumType.STRING)[m
+[32m+[m[32m    private PessoaGenero genero;[m
+[32m+[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/models/PessoaJuridica.java b/src/main/java/br/ifrn/edu/ProfitFlow/models/PessoaJuridica.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..420af10[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/models/PessoaJuridica.java[m
+[36m@@ -0,0 +1,16 @@[m
+[32m+[m[32mpackage br.ifrn.edu.ProfitFlow.models;[m
+[32m+[m
+[32m+[m[32mimport jakarta.persistence.Column;[m
+[32m+[m[32mimport jakarta.persistence.Entity;[m
+[32m+[m[32mimport lombok.Getter;[m
+[32m+[m[32mimport lombok.Setter;[m
+[32m+[m[32mimport org.hibernate.validator.constraints.br.CNPJ;[m
+[32m+[m
+[32m+[m[32m@Entity[m
+[32m+[m[32m@Getter @Setter[m
+[32m+[m[32mpublic class PessoaJuridica extends Usuario {[m
+[32m+[m
+[32m+[m[32m    @CNPJ[m
+[32m+[m[32m    @Column(unique = true)[m
+[32m+[m[32m    private String cnpj;[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/models/Receita.java b/src/main/java/br/ifrn/edu/ProfitFlow/models/Receita.java[m
+[1mdeleted file mode 100644[m
+[1mindex 36d2496..0000000[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/models/Receita.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,35 +0,0 @@[m
+[31m-package br.ifrn.edu.ProfitFlow.models;[m
+[31m-[m
+[31m-import br.ifrn.edu.ProfitFlow.models.enums.ReceitaStatus;[m
+[31m-import jakarta.persistence.*;[m
+[31m-import lombok.Getter;[m
+[31m-import lombok.Setter;[m
+[31m-[m
+[31m-import java.math.BigDecimal;[m
+[31m-import java.time.LocalDate;[m
+[31m-[m
+[31m-@Entity[m
+[31m-@Getter @Setter[m
+[31m-public class Receita {[m
+[31m-    @Id[m
+[31m-    @GeneratedValue(strategy = GenerationType.IDENTITY)[m
+[31m-    private int id;[m
+[31m-[m
+[31m-    private String descricao;[m
+[31m-    private String categoria;[m
+[31m-[m
+[31m-    @Enumerated(EnumType.STRING)[m
+[31m-    private ReceitaStatus status;[m
+[31m-[m
+[31m-    @Column(precision = 10, scale = 2, nullable = false)[m
+[31m-    private BigDecimal valor;[m
+[31m-[m
+[31m-    private LocalDate dataRecebimento;[m
+[31m-    private LocalDate dataPrevista;[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-    @ManyToOne[m
+[31m-    @JoinColumn(name = "cliente_id")[m
+[31m-    private ClienteFornecedor cliente;[m
+[31m-}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/models/Usuario.java b/src/main/java/br/ifrn/edu/ProfitFlow/models/Usuario.java[m
+[1mindex c3edae8..b9700a3 100644[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/models/Usuario.java[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/models/Usuario.java[m
+[36m@@ -1,5 +1,7 @@[m
+ package br.ifrn.edu.ProfitFlow.models;[m
+ [m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.annotations.PhoneIsValid;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.enums.PessoaTipo;[m
+ import br.ifrn.edu.ProfitFlow.models.enums.UsuarioRole;[m
+ import jakarta.persistence.*;[m
+ import jakarta.validation.constraints.Email;[m
+[36m@@ -12,11 +14,12 @@[m [mimport lombok.Setter;[m
+ import java.time.LocalDateTime;[m
+ [m
+ @Entity[m
+[32m+[m[32m@Inheritance(strategy = InheritanceType.JOINED)[m
+ @Getter @Setter[m
+[31m-public class Usuario {[m
+[32m+[m[32mpublic abstract class Usuario {[m
+     @Id[m
+     @GeneratedValue(strategy = GenerationType.IDENTITY)[m
+[31m-    private int  id;[m
+[32m+[m[32m    private Long  id;[m
+ [m
+     @NotBlank(message = "Nome é obrigatório")[m
+     @Size(min = 5, max = 80, message = "O nome deve ter entre 5 e 80 caracteres")[m
+[36m@@ -28,11 +31,19 @@[m [mpublic class Usuario {[m
+ [m
+     private String senha;[m
+ [m
+[32m+[m[32m    @PhoneIsValid[m
+[32m+[m[32m    private String telefone;[m
+[32m+[m
+[32m+[m[32m    private String endereco;[m
+[32m+[m
+     @Enumerated(EnumType.STRING)[m
+     private UsuarioRole role;[m
+ [m
+     private boolean ativo;[m
+ [m
+[32m+[m[32m    @Enumerated(EnumType.STRING)[m
+[32m+[m[32m    private PessoaTipo pessoa;[m
+[32m+[m
+     private LocalDateTime dataCadastro;[m
+     private LocalDateTime dataAtualizacao;[m
+ [m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/models/enums/ContaTipo.java b/src/main/java/br/ifrn/edu/ProfitFlow/models/enums/ContaTipo.java[m
+[1mindex 1807f45..ae54a71 100644[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/models/enums/ContaTipo.java[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/models/enums/ContaTipo.java[m
+[36m@@ -1,6 +1,6 @@[m
+ package br.ifrn.edu.ProfitFlow.models.enums;[m
+ [m
+ public enum ContaTipo {[m
+[31m-    PAGAR,[m
+[31m-    RECEBER[m
+[32m+[m[32m    RECEITA,[m
+[32m+[m[32m    DESPESA[m
+ }[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/models/enums/DespesaStatus.java b/src/main/java/br/ifrn/edu/ProfitFlow/models/enums/DespesaStatus.java[m
+[1mdeleted file mode 100644[m
+[1mindex 78eafcc..0000000[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/models/enums/DespesaStatus.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,6 +0,0 @@[m
+[31m-package br.ifrn.edu.ProfitFlow.models.enums;[m
+[31m-[m
+[31m-public enum DespesaStatus {[m
+[31m-    PENDENTE,[m
+[31m-    PAGO[m
+[31m-}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/models/enums/PessoaGenero.java b/src/main/java/br/ifrn/edu/ProfitFlow/models/enums/PessoaGenero.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..915e668[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/models/enums/PessoaGenero.java[m
+[36m@@ -0,0 +1,6 @@[m
+[32m+[m[32mpackage br.ifrn.edu.ProfitFlow.models.enums;[m
+[32m+[m
+[32m+[m[32mpublic enum PessoaGenero {[m
+[32m+[m[32m    MASCULINO,[m
+[32m+[m[32m    FEMININO[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/models/enums/ReceitaStatus.java b/src/main/java/br/ifrn/edu/ProfitFlow/models/enums/ReceitaStatus.java[m
+[1mdeleted file mode 100644[m
+[1mindex 06842a9..0000000[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/models/enums/ReceitaStatus.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,6 +0,0 @@[m
+[31m-package br.ifrn.edu.ProfitFlow.models.enums;[m
+[31m-[m
+[31m-public enum ReceitaStatus {[m
+[31m-    PENDENTE,[m
+[31m-    RECEBIDO[m
+[31m-}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/repository/ClienteFornecedorRepository.java b/src/main/java/br/ifrn/edu/ProfitFlow/repository/ClienteFornecedorRepository.java[m
+[1mdeleted file mode 100644[m
+[1mindex a46b10b..0000000[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/repository/ClienteFornecedorRepository.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,7 +0,0 @@[m
+[31m-package br.ifrn.edu.ProfitFlow.repository;[m
+[31m-[m
+[31m-import br.ifrn.edu.ProfitFlow.models.ClienteFornecedor;[m
+[31m-import org.springframework.data.jpa.repository.JpaRepository;[m
+[31m-[m
+[31m-public interface ClienteFornecedorRepository extends JpaRepository<ClienteFornecedor, Integer> {[m
+[31m-}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/repository/ContaRepository.java b/src/main/java/br/ifrn/edu/ProfitFlow/repository/ContaRepository.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..71ad33d[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/repository/ContaRepository.java[m
+[36m@@ -0,0 +1,7 @@[m
+[32m+[m[32mpackage br.ifrn.edu.ProfitFlow.repository;[m
+[32m+[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.RegistroFinanceiro;[m
+[32m+[m[32mimport org.springframework.data.jpa.repository.JpaRepository;[m
+[32m+[m
+[32m+[m[32mpublic interface ContaRepository extends JpaRepository<Conta, Integer> {[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/repository/ContasRepository.java b/src/main/java/br/ifrn/edu/ProfitFlow/repository/ContasRepository.java[m
+[1mdeleted file mode 100644[m
+[1mindex 50420d6..0000000[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/repository/ContasRepository.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,7 +0,0 @@[m
+[31m-package br.ifrn.edu.ProfitFlow.repository;[m
+[31m-[m
+[31m-import br.ifrn.edu.ProfitFlow.models.Contas;[m
+[31m-import org.springframework.data.jpa.repository.JpaRepository;[m
+[31m-[m
+[31m-public interface ContasRepository extends JpaRepository<Contas, Integer> {[m
+[31m-}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/repository/DespesaRepository.java b/src/main/java/br/ifrn/edu/ProfitFlow/repository/DespesaRepository.java[m
+[1mdeleted file mode 100644[m
+[1mindex cf9f5dc..0000000[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/repository/DespesaRepository.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,7 +0,0 @@[m
+[31m-package br.ifrn.edu.ProfitFlow.repository;[m
+[31m-[m
+[31m-import br.ifrn.edu.ProfitFlow.models.Despesa;[m
+[31m-import org.springframework.data.jpa.repository.JpaRepository;[m
+[31m-[m
+[31m-public interface DespesaRepository extends JpaRepository<Despesa, Integer> {[m
+[31m-}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/repository/PessoaFisicaRepository.java b/src/main/java/br/ifrn/edu/ProfitFlow/repository/PessoaFisicaRepository.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..a4864c3[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/repository/PessoaFisicaRepository.java[m
+[36m@@ -0,0 +1,8 @@[m
+[32m+[m[32mpackage br.ifrn.edu.ProfitFlow.repository;[m
+[32m+[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.PessoaFisica;[m
+[32m+[m[32mimport org.springframework.data.jpa.repository.JpaRepository;[m
+[32m+[m
+[32m+[m[32mpublic interface PessoaFisicaRepository extends JpaRepository<PessoaFisica, Long> {[m
+[32m+[m[32m    PessoaFisica findByCpf(String cpf);[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/repository/PessoaJuridicaRepository.java b/src/main/java/br/ifrn/edu/ProfitFlow/repository/PessoaJuridicaRepository.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..59c03bd[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/repository/PessoaJuridicaRepository.java[m
+[36m@@ -0,0 +1,8 @@[m
+[32m+[m[32mpackage br.ifrn.edu.ProfitFlow.repository;[m
+[32m+[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.PessoaJuridica;[m
+[32m+[m[32mimport org.springframework.data.jpa.repository.JpaRepository;[m
+[32m+[m
+[32m+[m[32mpublic interface PessoaJuridicaRepository extends JpaRepository<PessoaJuridica,Long> {[m
+[32m+[m[32m    PessoaJuridica findByCnpj(String cnpj);[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/repository/ReceitaRepository.java b/src/main/java/br/ifrn/edu/ProfitFlow/repository/ReceitaRepository.java[m
+[1mdeleted file mode 100644[m
+[1mindex 1660755..0000000[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/repository/ReceitaRepository.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,7 +0,0 @@[m
+[31m-package br.ifrn.edu.ProfitFlow.repository;[m
+[31m-[m
+[31m-import br.ifrn.edu.ProfitFlow.models.Receita;[m
+[31m-import org.springframework.data.jpa.repository.JpaRepository;[m
+[31m-[m
+[31m-public interface ReceitaRepository extends JpaRepository<Receita, Integer> {[m
+[31m-}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/repository/UsuarioRepository.java b/src/main/java/br/ifrn/edu/ProfitFlow/repository/UsuarioRepository.java[m
+[1mindex ffef35f..d177cf6 100644[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/repository/UsuarioRepository.java[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/repository/UsuarioRepository.java[m
+[36m@@ -4,4 +4,5 @@[m [mimport br.ifrn.edu.ProfitFlow.models.Usuario;[m
+ import org.springframework.data.jpa.repository.JpaRepository;[m
+ [m
+ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {[m
+[32m+[m[32m    Usuario findByNome(String nome);[m
+ }[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/services/ClienteFornecedorService.java b/src/main/java/br/ifrn/edu/ProfitFlow/services/ClienteFornecedorService.java[m
+[1mdeleted file mode 100644[m
+[1mindex caf19c6..0000000[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/services/ClienteFornecedorService.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,76 +0,0 @@[m
+[31m-package br.ifrn.edu.ProfitFlow.services;[m
+[31m-[m
+[31m-[m
+[31m-import br.ifrn.edu.ProfitFlow.dto.request.RequestPessoaDTO;[m
+[31m-import br.ifrn.edu.ProfitFlow.dto.response.ResponsePessoaDTO;[m
+[31m-import br.ifrn.edu.ProfitFlow.models.ClienteFornecedor;[m
+[31m-import br.ifrn.edu.ProfitFlow.models.Usuario;[m
+[31m-import br.ifrn.edu.ProfitFlow.models.enums.PessoaTipo;[m
+[31m-import br.ifrn.edu.ProfitFlow.models.enums.UsuarioRole;[m
+[31m-import br.ifrn.edu.ProfitFlow.repository.ClienteFornecedorRepository;[m
+[31m-import br.ifrn.edu.ProfitFlow.repository.UsuarioRepository;[m
+[31m-import jakarta.transaction.Transactional;[m
+[31m-import org.springframework.beans.factory.annotation.Autowired;[m
+[31m-import org.springframework.stereotype.Service;[m
+[31m-[m
+[31m-import java.time.LocalDateTime;[m
+[31m-import java.util.List;[m
+[31m-import java.util.Optional;[m
+[31m-[m
+[31m-@Service[m
+[31m-public class ClienteFornecedorService {[m
+[31m-[m
+[31m-    @Autowired[m
+[31m-    private ClienteFornecedorRepository clienteFornecedorRepository;[m
+[31m-[m
+[31m-    @Autowired[m
+[31m-    private UsuarioRepository usuarioRepository;[m
+[31m-[m
+[31m-    public List<ClienteFornecedor> findAll(){[m
+[31m-        return clienteFornecedorRepository.findAll();[m
+[31m-    }[m
+[31m-[m
+[31m-    public Optional<ClienteFornecedor> findById(Integer id){[m
+[31m-        return clienteFornecedorRepository.findById(id);[m
+[31m-    }[m
+[31m-[m
+[31m-    @Transactional[m
+[31m-    public ResponsePessoaDTO salvar(RequestPessoaDTO pessoa) throws Exception {[m
+[31m-[m
+[31m-        if (pessoa.getPessoa() != PessoaTipo.CLIENTE && pessoa.getPessoa() != PessoaTipo.FORNECEDOR) {[m
+[31m-            throw new IllegalArgumentException("Tipo de Pessoa Inválido! Use CLIENTE ou FORNECEDOR");[m
+[31m-        }[m
+[31m-[m
+[31m-        Usuario usuario = new Usuario();[m
+[31m-        usuario.setNome(pessoa.getNome());[m
+[31m-        usuario.setEmail(pessoa.getEmail());[m
+[31m-        usuario.setAtivo(true);[m
+[31m-        usuario.setRole(UsuarioRole.USUARIO);[m
+[31m-        usuario.setDataCadastro(LocalDateTime.now());[m
+[31m-        usuario.setDataAtualizacao(LocalDateTime.now());[m
+[31m-        Usuario user = usuarioRepository.save(usuario);[m
+[31m-[m
+[31m-        ClienteFornecedor clienteFornecedor = new ClienteFornecedor();[m
+[31m-        clienteFornecedor.setUsuario(user);[m
+[31m-        clienteFornecedor.setEndereco(pessoa.getEndereco());[m
+[31m-        clienteFornecedor.setTelefone(pessoa.getTelefone());[m
+[31m-        clienteFornecedor.setCpfCnpj(pessoa.getCpfCnpj());[m
+[31m-        clienteFornecedor.setPessoa(pessoa.getPessoa());[m
+[31m-        ClienteFornecedor clienteFornecedor1= clienteFornecedorRepository.save(clienteFornecedor);[m
+[31m-[m
+[31m-        ResponsePessoaDTO responsePessoaDTO = new ResponsePessoaDTO();[m
+[31m-        responsePessoaDTO.setId(clienteFornecedor1.getId());[m
+[31m-        responsePessoaDTO.setNome(clienteFornecedor1.getUsuario().getNome());[m
+[31m-        responsePessoaDTO.setEmail(clienteFornecedor1.getUsuario().getEmail());[m
+[31m-        responsePessoaDTO.setEndereco(clienteFornecedor1.getEndereco());[m
+[31m-        responsePessoaDTO.setTelefone(clienteFornecedor1.getTelefone());[m
+[31m-        responsePessoaDTO.setCpfCnpj(clienteFornecedor1.getCpfCnpj());[m
+[31m-        responsePessoaDTO.setPessoa(clienteFornecedor1.getPessoa());[m
+[31m-        responsePessoaDTO.setDataCadastro(LocalDateTime.now());[m
+[31m-        responsePessoaDTO.setDataAtualizacao(LocalDateTime.now());[m
+[31m-        responsePessoaDTO.setRole(clienteFornecedor1.getUsuario().getRole());[m
+[31m-        responsePessoaDTO.setAtivo(clienteFornecedor1.getUsuario().isAtivo());[m
+[31m-[m
+[31m-        return responsePessoaDTO;[m
+[31m-    }[m
+[31m-}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/services/ContaService.java b/src/main/java/br/ifrn/edu/ProfitFlow/services/ContaService.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..9fe1919[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/services/ContaService.java[m
+[36m@@ -0,0 +1,101 @@[m
+[32m+[m[32mpackage br.ifrn.edu.ProfitFlow.services;[m
+[32m+[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.dto.request.RequestRegistroFinanceiroDTO;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.dto.response.ResponseRegistroFinanceiroDTO;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.mapper.MapperRegistroFinanceiro;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.RegistroFinanceiro;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.Usuario;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.enums.ContaStatus;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.repository.RegistroFinanceiroRepository;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.repository.UsuarioRepository;[m
+[32m+[m[32mimport jakarta.persistence.EntityNotFoundException;[m
+[32m+[m[32mimport org.springframework.beans.factory.annotation.Autowired;[m
+[32m+[m[32mimport org.springframework.stereotype.Service;[m
+[32m+[m[32mimport java.time.LocalDate;[m
+[32m+[m[32mimport java.util.ArrayList;[m
+[32m+[m[32mimport java.util.List;[m
+[32m+[m
+[32m+[m[32m@Service[m
+[32m+[m[32mpublic class ContaService {[m
+[32m+[m
+[32m+[m[32m    @Autowired[m
+[32m+[m[32m    private ContaRepository contasRepository;[m
+[32m+[m
+[32m+[m[32m    @Autowired[m
+[32m+[m[32m    private UsuarioRepository usuarioRepository;[m
+[32m+[m
+[32m+[m[32m    @Autowired[m
+[32m+[m[32m    private MapperConta mapper;[m
+[32m+[m
+[32m+[m
+[32m+[m[32m    public List<ResponseContaDTO> getContas() {[m
+[32m+[m
+[32m+[m[32m        List<Conta> contasEntities = contasRepository.findAll();[m
+[32m+[m[32m        List<ResponseContaDTO> contasDTO = new ArrayList<>();[m
+[32m+[m
+[32m+[m[32m        contasDTO = mapper.toResponseContaDTOList(contasEntities);[m
+[32m+[m
+[32m+[m[32m        return contasDTO;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public ResponseContaDTO getConta(Integer id) throws Exception {[m
+[32m+[m[32m        Conta registroFinanceiro = contasRepository.findById(id)[m
+[32m+[m[32m                .orElseThrow(()-> new Exception("Conta não encontrada"));[m
+[32m+[m
+[32m+[m[32m        ResponseContaDTO contaDTO = mapper.mapContaToResponseContaDTO(registroFinanceiro);[m
+[32m+[m
+[32m+[m[32m        return contaDTO;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public ResponseContaDTO createConta(RequestContaDTO contaDTO) throws Exception {[m
+[32m+[m[32m        Usuario user = usuarioRepository.findById(contaDTO.getPessoaId())[m
+[32m+[m[32m                .orElseThrow(() -> new EntityNotFoundException([m
+[32m+[m[32m                        "Cliente ou Fornecedor não encontrado com ID: " + contaDTO.getPessoaId()[m
+[32m+[m[32m                ));[m
+[32m+[m[32m        Conta registroFinanceiro = mapper.mapContaDtoToConta(contaDTO);[m
+[32m+[m[32m        registroFinanceiro.setPessoa(user);[m
+[32m+[m[32m        registroFinanceiro = contasRepository.save(registroFinanceiro);[m
+[32m+[m[32m        ResponseContaDTO contaResponse = mapper.mapContaToResponseContaDTO(registroFinanceiro);[m
+[32m+[m[32m        contaResponse.setPessoa(user);[m
+[32m+[m[32m        return contaResponse;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m
+[32m+[m[32m    public ResponseContaDTO updateConta(Integer id, RequestContaDTO contaDTO) throws Exception {[m
+[32m+[m[32m        Conta registroFinanceiro = contasRepository.findById(id)[m
+[32m+[m[32m                .orElseThrow(() -> new Exception("Conta não encontrada com ID: " + id));[m
+[32m+[m[32m        mapper.updateContaFromDTO(contaDTO, registroFinanceiro);[m
+[32m+[m[32m        registroFinanceiro = contasRepository.save(registroFinanceiro);[m
+[32m+[m[32m        ResponseContaDTO contaResponse = mapper.mapContaToResponseContaDTO(registroFinanceiro);[m
+[32m+[m[32m        return contaResponse;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public boolean updateQuitar(Integer id) throws Exception {[m
+[32m+[m[32m        Conta registroFinanceiro = contasRepository.findById(id)[m
+[32m+[m[32m                .orElseThrow(() -> new Exception("Conta com ID " + id + " não encontrada!"));[m
+[32m+[m[32m        registroFinanceiro.setStatus(ContaStatus.PAGO);[m
+[32m+[m[32m        contasRepository.save(registroFinanceiro);[m
+[32m+[m[32m        return true;[m
+[32m+[m[32m    }[m
+[32m+[m[32m    public void deleteConta(Integer id){[m
+[32m+[m[32m        contasRepository.deleteById(id);[m
+[32m+[m[32m    }[m
+[32m+[m[32m    public ResponseContaDTO getVencidas(){[m
+[32m+[m[32m        return null;[m
+[32m+[m[32m    }[m
+[32m+[m[32m    public ResponseContaDTO getPendentes(){[m
+[32m+[m[32m        return null;[m
+[32m+[m[32m    }[m
+[32m+[m[32m    public ResponseContaDTO getContasPorTipo(String tipo) {[m
+[32m+[m[32m        return null;[m
+[32m+[m[32m    }[m
+[32m+[m[32m    public List<ResponseContaDTO> getCategoria(String categoria){[m
+[32m+[m[32m        return null;[m
+[32m+[m[32m    }[m
+[32m+[m[32m    public List<ResponseContaDTO> getPeriodo(LocalDate inicio, LocalDate fim){[m
+[32m+[m[32m        return null;[m
+[32m+[m[32m    }[m
+[32m+[m[32m    public List<ResponseContaDTO> getStatus(String status){[m
+[32m+[m[32m        return null;[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/services/ContasService.java b/src/main/java/br/ifrn/edu/ProfitFlow/services/ContasService.java[m
+[1mdeleted file mode 100644[m
+[1mindex 565a152..0000000[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/services/ContasService.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,161 +0,0 @@[m
+[31m-package br.ifrn.edu.ProfitFlow.services;[m
+[31m-[m
+[31m-[m
+[31m-import br.ifrn.edu.ProfitFlow.dto.request.RequestRegistroFinanceiroDTO;[m
+[31m-import br.ifrn.edu.ProfitFlow.dto.response.ResponseRegistroFinanceiroDTO;[m
+[31m-import br.ifrn.edu.ProfitFlow.models.ClienteFornecedor;[m
+[31m-import br.ifrn.edu.ProfitFlow.models.Contas;[m
+[31m-import br.ifrn.edu.ProfitFlow.models.enums.ContaStatus;[m
+[31m-import br.ifrn.edu.ProfitFlow.repository.ClienteFornecedorRepository;[m
+[31m-import br.ifrn.edu.ProfitFlow.repository.ContasRepository;[m
+[31m-import org.springframework.beans.factory.annotation.Autowired;[m
+[31m-import org.springframework.http.ResponseEntity;[m
+[31m-import org.springframework.stereotype.Service;[m
+[31m-[m
+[31m-import java.time.LocalDate;[m
+[31m-import java.time.LocalDateTime;[m
+[31m-import java.util.ArrayList;[m
+[31m-import java.util.List;[m
+[31m-import java.util.NoSuchElementException;[m
+[31m-[m
+[31m-@Service[m
+[31m-public class ContasService {[m
+[31m-[m
+[31m-    @Autowired[m
+[31m-    private ContasRepository contasRepository;[m
+[31m-[m
+[31m-    @Autowired[m
+[31m-    private ClienteFornecedorRepository clienteFornecedorRepository;[m
+[31m-[m
+[31m-[m
+[31m-    public List<ResponseContaDTO> getContas(){[m
+[31m-        List<ResponseContaDTO> registroFinanceiros = new ArrayList<>();[m
+[31m-[m
+[31m-        List<Contas> c = contasRepository.findAll();[m
+[31m-        for (Contas cc : c) {[m
+[31m-            ResponseContaDTO registroFinanceiro = new ResponseContaDTO();[m
+[31m-            registroFinanceiro.setId(cc.getId());[m
+[31m-            registroFinanceiro.setDescricao(cc.getDescricao());[m
+[31m-            registroFinanceiro.setValor(cc.getValor());[m
+[31m-            registroFinanceiro.setDataPagamento(cc.getDataPagamento());[m
+[31m-            registroFinanceiro.setDataVencimento(cc.getDataVencimento());[m
+[31m-            registroFinanceiro.setDataAtualizacao(cc.getDataAtualizacao());[m
+[31m-            registroFinanceiro.setTipo(cc.getTipo());[m
+[31m-            registroFinanceiro.setStatus(cc.getStatus());[m
+[31m-            registroFinanceiro.setClienteFornecedor(cc.getClienteFornecedor());[m
+[31m-            registroFinanceiros.add(registroFinanceiro);[m
+[31m-        }[m
+[31m-[m
+[31m-        return registroFinanceiros;[m
+[31m-    }[m
+[31m-[m
+[31m-[m
+[31m-    public ResponseContaDTO getConta(Integer id) throws Exception {[m
+[31m-        Contas c = contasRepository.findById(id)[m
+[31m-                .orElseThrow(()-> new Exception("Conta não encontrada"));[m
+[31m-[m
+[31m-        ResponseContaDTO registroFinanceiro = new ResponseContaDTO();[m
+[31m-        registroFinanceiro.setId(c.getId());[m
+[31m-        registroFinanceiro.setDescricao(c.getDescricao());[m
+[31m-        registroFinanceiro.setValor(c.getValor());[m
+[31m-        registroFinanceiro.setDataPagamento(c.getDataPagamento());[m
+[31m-        registroFinanceiro.setDataVencimento(c.getDataVencimento());[m
+[31m-        registroFinanceiro.setDataAtualizacao(c.getDataAtualizacao());[m
+[31m-        registroFinanceiro.setTipo(c.getTipo());[m
+[31m-        registroFinanceiro.setStatus(c.getStatus());[m
+[31m-        registroFinanceiro.setClienteFornecedor(c.getClienteFornecedor());[m
+[31m-        registroFinanceiro.setDataCriacao(c.getDataCriacao());[m
+[31m-[m
+[31m-        return registroFinanceiro;[m
+[31m-    }[m
+[31m-[m
+[31m-[m
+[31m-    public ResponseContaDTO createConta(RequestContaDTO registroFinanceiro) throws Exception {[m
+[31m-        Contas c = new Contas();[m
+[31m-        c.setDescricao(registroFinanceiro.getDescricao());[m
+[31m-        c.setValor(registroFinanceiro.getValor());[m
+[31m-        c.setDataPagamento(registroFinanceiro.getDataPagamento());[m
+[31m-        c.setDataVencimento(registroFinanceiro.getDataVencimento());[m
+[31m-        c.setDataAtualizacao(LocalDateTime.now());[m
+[31m-        c.setTipo(registroFinanceiro.getTipo());[m
+[31m-        c.setStatus(registroFinanceiro.getStatus());[m
+[31m-        c.setDataCriacao(LocalDateTime.now());[m
+[31m-        ClienteFornecedor cf = clienteFornecedorRepository.findById(registroFinanceiro.getClienteFornecedorId())[m
+[31m-                .orElseThrow(() -> new Exception([m
+[31m-                        "Cliente ou Fornecedor não encontrado com ID: " + registroFinanceiro.getClienteFornecedorId()[m
+[31m-                ));[m
+[31m-        c.setClienteFornecedor(cf);[m
+[31m-[m
+[31m-        c = contasRepository.save(c);[m
+[31m-[m
+[31m-        ResponseContaDTO contaResponse = new ResponseContaDTO();[m
+[31m-        contaResponse.setId(c.getId());[m
+[31m-        contaResponse.setDescricao(c.getDescricao());[m
+[31m-        contaResponse.setValor(c.getValor());[m
+[31m-        contaResponse.setDataPagamento(c.getDataPagamento());[m
+[31m-        contaResponse.setDataVencimento(c.getDataVencimento());[m
+[31m-        contaResponse.setDataAtualizacao(c.getDataAtualizacao());[m
+[31m-        contaResponse.setTipo(c.getTipo());[m
+[31m-        contaResponse.setStatus(c.getStatus());[m
+[31m-        contaResponse.setClienteFornecedor(c.getClienteFornecedor());[m
+[31m-        contaResponse.setDataCriacao(c.getDataCriacao());[m
+[31m-        return contaResponse;[m
+[31m-    }[m
+[31m-[m
+[31m-[m
+[31m-    public ResponseContaDTO updateConta(Integer id, RequestContaDTO registroFinanceiro) throws Exception {[m
+[31m-        Contas c = contasRepository.findById(id)[m
+[31m-                .orElseThrow(() -> new Exception("Conta não encontrada com ID: " + id));[m
+[31m-        c.setDescricao(registroFinanceiro.getDescricao());[m
+[31m-        c.setValor(registroFinanceiro.getValor());[m
+[31m-        c.setDataPagamento(registroFinanceiro.getDataPagamento());[m
+[31m-        c.setDataVencimento(registroFinanceiro.getDataVencimento());[m
+[31m-        c.setDataAtualizacao(LocalDateTime.now());[m
+[31m-        c.setTipo(registroFinanceiro.getTipo());[m
+[31m-        c.setStatus(registroFinanceiro.getStatus());[m
+[31m-        contasRepository.save(c);[m
+[31m-[m
+[31m-        ResponseContaDTO contaResponse = new ResponseContaDTO();[m
+[31m-        contaResponse.setId(c.getId());[m
+[31m-        contaResponse.setDescricao(c.getDescricao());[m
+[31m-        contaResponse.setValor(c.getValor());[m
+[31m-        contaResponse.setDataPagamento(c.getDataPagamento());[m
+[31m-        contaResponse.setDataVencimento(c.getDataVencimento());[m
+[31m-        contaResponse.setDataAtualizacao(c.getDataAtualizacao());[m
+[31m-        contaResponse.setTipo(c.getTipo());[m
+[31m-        contaResponse.setStatus(c.getStatus());[m
+[31m-        contaResponse.setClienteFornecedor(c.getClienteFornecedor());[m
+[31m-        contaResponse.setDataCriacao(c.getDataCriacao());[m
+[31m-[m
+[31m-        return contaResponse;[m
+[31m-    }[m
+[31m-[m
+[31m-[m
+[31m-    public void deleteConta(Integer id){[m
+[31m-        contasRepository.deleteById(id);[m
+[31m-    }[m
+[31m-[m
+[31m-[m
+[31m-    public boolean updateQuitar(Integer id) throws Exception {[m
+[31m-        Contas registroFinanceiro = contasRepository.findById(id)[m
+[31m-                .orElseThrow(() -> new Exception("Conta com ID " + id + " não encontrada!"));[m
+[31m-        registroFinanceiro.setStatus(ContaStatus.PAGO);[m
+[31m-        contasRepository.save(registroFinanceiro);[m
+[31m-        return true;[m
+[31m-    }[m
+[31m-[m
+[31m-[m
+[31m-    public ResponseContaDTO getVencidas(){[m
+[31m-        return null;[m
+[31m-    }[m
+[31m-[m
+[31m-[m
+[31m-    public ResponseContaDTO getPendentes(){[m
+[31m-        return null;[m
+[31m-    }[m
+[31m-[m
+[31m-[m
+[31m-    public ResponseContaDTO getContasPorTipo(String tipo) {[m
+[31m-        return null;[m
+[31m-    }[m
+[31m-}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/services/ReceitaService.java b/src/main/java/br/ifrn/edu/ProfitFlow/services/ReceitaService.java[m
+[1mdeleted file mode 100644[m
+[1mindex cff091e..0000000[m
+[1m--- a/src/main/java/br/ifrn/edu/ProfitFlow/services/ReceitaService.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,50 +0,0 @@[m
+[31m-package br.ifrn.edu.ProfitFlow.services;[m
+[31m-[m
+[31m-import br.ifrn.edu.ProfitFlow.dto.response.ResponseReceitaDTO;[m
+[31m-import br.ifrn.edu.ProfitFlow.repository.ReceitaRepository;[m
+[31m-import org.springframework.beans.factory.annotation.Autowired;[m
+[31m-import org.springframework.stereotype.Service;[m
+[31m-[m
+[31m-[m
+[31m-import java.time.LocalDate;[m
+[31m-import java.util.List;[m
+[31m-[m
+[31m-@Service[m
+[31m-public class ReceitaService {[m
+[31m-    @Autowired[m
+[31m-    private ReceitaRepository receitaRepository;[m
+[31m-[m
+[31m-[m
+[31m-    public ResponseReceitaDTO getPendentes(){[m
+[31m-        return null;[m
+[31m-    }[m
+[31m-[m
+[31m-    public ResponseReceitaDTO getPendentes(Integer id){[m
+[31m-        return null;[m
+[31m-    }[m
+[31m-[m
+[31m-    public ResponseReceitaDTO createReceita(){[m
+[31m-        return null;[m
+[31m-    }[m
+[31m-[m
+[31m-    public ResponseReceitaDTO updateReceita(Integer id){[m
+[31m-        return null;[m
+[31m-    }[m
+[31m-[m
+[31m-    public void deleteReceita(Integer id){[m
+[31m-        receitaRepository.deleteById(id);[m
+[31m-    }[m
+[31m-[m
+[31m-    public List<ResponseReceitaDTO> getPeriodo(LocalDate inicio, LocalDate fim){[m
+[31m-        return null;[m
+[31m-    }[m
+[31m-[m
+[31m-    public List<ResponseReceitaDTO> getStatus(String status){[m
+[31m-        return null;[m
+[31m-    }[m
+[31m-[m
+[31m-    public List<ResponseReceitaDTO> getCategoria(String categoria){[m
+[31m-        return null;[m
+[31m-    }[m
+[31m-[m
+[31m-}[m
+[1mdiff --git a/src/main/java/br/ifrn/edu/ProfitFlow/services/UsuarioService.java b/src/main/java/br/ifrn/edu/ProfitFlow/services/UsuarioService.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..a0ae02b[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/br/ifrn/edu/ProfitFlow/services/UsuarioService.java[m
+[36m@@ -0,0 +1,84 @@[m
+[32m+[m[32mpackage br.ifrn.edu.ProfitFlow.services;[m
+[32m+[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.dto.request.RequestPessoaDTO;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.dto.response.ResponsePessoaDTO;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.mapper.MapperUsuario;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.PessoaFisica;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.PessoaJuridica;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.Usuario;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.enums.PessoaTipo;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.repository.PessoaFisicaRepository;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.repository.PessoaJuridicaRepository;[m
+[32m+[m[32mimport br.ifrn.edu.ProfitFlow.repository.UsuarioRepository;[m
+[32m+[m[32mimport jakarta.transaction.Transactional;[m
+[32m+[m[32mimport org.springframework.beans.factory.annotation.Autowired;[m
+[32m+[m[32mimport org.springframework.stereotype.Service;[m
+[32m+[m
+[32m+[m[32mimport java.util.List;[m
+[32m+[m[32mimport java.util.Optional;[m
+[32m+[m
+[32m+[m[32m@Service[m
+[32m+[m[32mpublic class UsuarioService {[m
+[32m+[m
+[32m+[m[32m    @Autowired[m
+[32m+[m[32m    private UsuarioRepository usuarioRepository;[m
+[32m+[m
+[32m+[m[32m    @Autowired[m
+[32m+[m[32m    PessoaJuridicaRepository pessoaJuridicaRepository;[m
+[32m+[m
+[32m+[m[32m    @Autowired[m
+[32m+[m[32m    PessoaFisicaRepository pessoaFisicaRepository;[m
+[32m+[m
+[32m+[m[32m    @Autowired[m
+[32m+[m[32m    private MapperUsuario mapper;[m
+[32m+[m
+[32m+[m[32m    public List<Usuario> findAll(){[m
+[32m+[m[32m        return usuarioRepository.findAll();[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public Optional<Usuario> findById(Integer id){[m
+[32m+[m[32m        return usuarioRepository.findById(id);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @Transactional[m
+[32m+[m[32m    public ResponsePessoaDTO createUser(RequestPessoaDTO pessoa) throws Exception {[m
+[32m+[m
+[32m+[m[32m        if (pessoa.getPessoa() != PessoaTipo.CLIENTE && pessoa.getPessoa() != PessoaTipo.FORNECEDOR) {[m
+[32m+[m[32m            throw new IllegalArgumentException("Tipo de Pessoa Inválido! Use CLIENTE ou FORNECEDOR");[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        ResponsePessoaDTO responsePessoaDTO = new ResponsePessoaDTO();[m
+[32m+[m
+[32m+[m[32m        if (isCnpj(pessoa.getCpfCnpj())){[m
+[32m+[m
+[32m+[m[32m            PessoaJuridica pj = mapper.toEntityPessoaJuridica(pessoa);[m
+[32m+[m[32m            pj = pessoaJuridicaRepository.save(pj);[m
+[32m+[m[32m            responsePessoaDTO = mapper.mapPJtoResponsePessoaDTO(pj);[m
+[32m+[m
+[32m+[m[32m        } else if (isCpf(pessoa.getCpfCnpj())) {[m
+[32m+[m
+[32m+[m[32m            PessoaFisica pf = mapper.toEntityPessoaFisica(pessoa);[m
+[32m+[m[32m            pf = pessoaFisicaRepository.save(pf);[m
+[32m+[m[32m            responsePessoaDTO = mapper.mapPFtoResponsePessoaDTO(pf);[m
+[32m+[m
+[32m+[m[32m        }else {[m
+[32m+[m[32m            throw new IllegalArgumentException("CPF ou CNPJ Inválido!");[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        return responsePessoaDTO;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public static boolean isCpf(String value) {[m
+[32m+[m[32m        String digits = value.replaceAll("\\D", "");[m
+[32m+[m[32m        return digits.length() == 11;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public static boolean isCnpj(String value) {[m
+[32m+[m[32m        String digits = value.replaceAll("\\D", "");[m
+[32m+[m[32m        return digits.length() == 14;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public static String normalize(String value) {[m
+[32m+[m[32m        return value.replaceAll("\\D", "");[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m

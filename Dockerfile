@@ -7,7 +7,7 @@ COPY pom.xml .
 RUN mvn dependency:go-offline -B
 
 # Copia o código-fonte e faz o build
-COPY ProfitFlow/src ./src
+COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Etapa 2: Imagem final (somente o JAR)
