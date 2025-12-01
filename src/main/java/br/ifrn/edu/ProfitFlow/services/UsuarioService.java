@@ -96,7 +96,7 @@ public class UsuarioService {
 
     public boolean delete(Long id){
         Usuario user = usuarioRepository.findById(id)
-                .orElseThrow(()->new NoSuchElementException("Usuário não Encontrado!"));
+                .orElseThrow(()->new EntityNotFoundException("Usuário não Encontrado!"));
         usuarioRepository.delete(user);
         return true;
     }

@@ -25,10 +25,6 @@ public class RequestRegistroFinanceiroDTO {
             example = "DESPESA")
     private ContaTipo tipo;
 
-    @Schema(description = "Status atual da conta",
-            example = "PENDENTE")
-    private ContaStatus status;
-
     @Schema(description = "Valor monetário da transação",
             example = "245.90")
     private BigDecimal valor;

@@ -34,7 +34,7 @@ public class RegistroFinanceiro {
 
     private LocalDate dataPrevista;    // vencimento/prevista
 
-    @PastOrPresent(message = "A data de Pagamento ou Recebimento não pode ser futura!")
+    //@PastOrPresent(message = "A data de Pagamento ou Recebimento não pode ser futura!")
     private LocalDate dataPagamento;   // pagamento/recebimento
 
     @ManyToOne
