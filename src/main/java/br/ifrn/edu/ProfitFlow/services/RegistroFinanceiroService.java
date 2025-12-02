@@ -10,6 +10,7 @@ import br.ifrn.edu.ProfitFlow.models.enums.ContaTipo;
 import br.ifrn.edu.ProfitFlow.repository.RegistroFinanceiroRepository;
 import br.ifrn.edu.ProfitFlow.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,6 +72,7 @@ public class RegistroFinanceiroService {
         RegistroFinanceiro registroFinanceiro = registroFinanceiroRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("RegistroFinanceiro não encontrada com ID: " + id));
         mapper.updateRegistroFinanceiroFromDTO(registroDTO, registroFinanceiro);
+        registroFinanceiro.setStatus(definirStatusPagamento(registroDTO.getDataPagamento(), registroDTO.getDataPrevista()));
         registroFinanceiro = registroFinanceiroRepository.save(registroFinanceiro);
         ResponseRegistroFinanceiroDTO rfResponse = mapper.mapRegistroFinanceiroToResponseRegistroFinanceiroDTO(registroFinanceiro);
         return rfResponse;
@@ -80,6 +82,9 @@ public class RegistroFinanceiroService {
     public boolean updateQuitar(Long id) throws EntityNotFoundException {
         RegistroFinanceiro registroFinanceiro = registroFinanceiroRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("RegistroFinanceiro com ID " + id + " não encontrada!"));
+        if (registroFinanceiro.getDataPagamento() != null && registroFinanceiro.getStatus() == ContaStatus.PAGO) {
+            throw new RuntimeException("O Registro Financeiro já está !uitado! \n" + "Data do pagamento: " + registroFinanceiro.getDataPagamento());
+        }
         registroFinanceiro.setStatus(ContaStatus.PAGO);
         registroFinanceiro.setDataPagamento(LocalDate.now());
         registroFinanceiroRepository.save(registroFinanceiro);
@@ -88,6 +93,8 @@ public class RegistroFinanceiroService {
 
     @Transactional
     public void deleteRegistroFinanceiro(Long id){
+        RegistroFinanceiro registroFinanceiro = registroFinanceiroRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Registro não encontrado!"));
         registroFinanceiroRepository.deleteById(id);
     }
 
@@ -98,8 +105,11 @@ public class RegistroFinanceiroService {
                 .collect(Collectors.toList());
     }
 
-    public List<ResponseRegistroFinanceiroDTO> getRegistroFinanceiroPorTipo(ContaTipo tipo) {
+    public List<ResponseRegistroFinanceiroDTO> getRegistroFinanceiroPorTipo(ContaTipo tipo) throws BadRequestException {
         List<RegistroFinanceiro> registroFinanceiro = registroFinanceiroRepository.findByTipo(tipo);
+        if (tipo != ContaTipo.RECEITA && tipo != ContaTipo.DESPESA) {
+            throw new BadRequestException("O tipo " + tipo + " é inválido!\n"+"use RECEITA ou DESPESA");
+        }
         return registroFinanceiro.stream()
                 .map(rf -> mapper.mapRegistroFinanceiroToResponseRegistroFinanceiroDTO(rf))
                 .collect(Collectors.toList());

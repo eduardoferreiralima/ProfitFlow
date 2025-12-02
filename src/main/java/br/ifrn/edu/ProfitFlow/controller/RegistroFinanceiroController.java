@@ -6,6 +6,7 @@ import br.ifrn.edu.ProfitFlow.dto.response.ResponseRegistroFinanceiroDTO;
 import br.ifrn.edu.ProfitFlow.models.enums.ContaStatus;
 import br.ifrn.edu.ProfitFlow.models.enums.ContaTipo;
 import br.ifrn.edu.ProfitFlow.services.RegistroFinanceiroService;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -64,7 +65,7 @@ public class RegistroFinanceiroController implements RegistroFinanceiroControlle
     }
 
     @GetMapping("/tipo")
-    public ResponseEntity<List<ResponseRegistroFinanceiroDTO>> getRegistroFinanceiroPorTipo(@RequestParam ContaTipo tipo) {
+    public ResponseEntity<List<ResponseRegistroFinanceiroDTO>> getRegistroFinanceiroPorTipo(@RequestParam ContaTipo tipo) throws BadRequestException {
         return ResponseEntity.ok().body(registroFinanceiroService.getRegistroFinanceiroPorTipo(tipo));
     }
 

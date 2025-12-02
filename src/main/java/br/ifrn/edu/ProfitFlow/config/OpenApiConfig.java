@@ -58,7 +58,6 @@ public class OpenApiConfig {
                 .externalDocs(new ExternalDocumentation()
                         .description("Documentação do Projeto")
                         .url("https://github.com/eduardoferreiralima/ProfitFlow")
-
                 );
     }
 

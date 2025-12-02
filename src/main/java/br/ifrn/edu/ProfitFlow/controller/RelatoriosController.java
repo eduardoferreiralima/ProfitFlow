@@ -23,6 +23,4 @@ public class RelatoriosController implements RelatoriosControllerDocs {
     public ResponseEntity<?> getSituacaoFinanceira(){
         return ResponseEntity.ok().build();
     }
-
-
 }
