@@ -60,7 +60,7 @@ public class RegistroFinanceiroService {
                 ));
         RegistroFinanceiro registroFinanceiro = mapper.mapRegistroFinanceiroDtoToRegistroFinanceiro(registroDTO);
         registroFinanceiro.setPessoa(user);
-        registroFinanceiro.setStatus(definirStatusPagamento(registroDTO.getDataPagamento(), registroDTO.getDataPrevista()));
+        registroFinanceiro.setStatus(definirStatusPagamento(registroDTO.getDataPagamento(), registroDTO.getDataPrevista(), registroDTO.getTipo()));
         registroFinanceiro = registroFinanceiroRepository.save(registroFinanceiro);
         ResponseRegistroFinanceiroDTO rfResponse = mapper.mapRegistroFinanceiroToResponseRegistroFinanceiroDTO(registroFinanceiro);
         rfResponse.setPessoa(user);
@@ -72,7 +72,7 @@ public class RegistroFinanceiroService {
         RegistroFinanceiro registroFinanceiro = registroFinanceiroRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("RegistroFinanceiro não encontrada com ID: " + id));
         mapper.updateRegistroFinanceiroFromDTO(registroDTO, registroFinanceiro);
-        registroFinanceiro.setStatus(definirStatusPagamento(registroDTO.getDataPagamento(), registroDTO.getDataPrevista()));
+        registroFinanceiro.setStatus(definirStatusPagamento(registroDTO.getDataPagamento(), registroDTO.getDataPrevista(), registroDTO.getTipo()));
         registroFinanceiro = registroFinanceiroRepository.save(registroFinanceiro);
         ResponseRegistroFinanceiroDTO rfResponse = mapper.mapRegistroFinanceiroToResponseRegistroFinanceiroDTO(registroFinanceiro);
         return rfResponse;
@@ -130,25 +130,22 @@ public class RegistroFinanceiroService {
     }
 
 
-    public ContaStatus definirStatusPagamento(LocalDate pagamento, LocalDate prevista) {
-
+    public ContaStatus definirStatusPagamento(LocalDate pagamento, LocalDate prevista, ContaTipo tipo) {
         LocalDate hoje = LocalDate.now();
 
-        // Regra 1: Não permitir pagamento futuro
-        if (pagamento != null && pagamento.isAfter(hoje)) {
-            return ContaStatus.PENDENTE;
-        }
-
-        // Regra 2: Se foi pago → PAGO
         if (pagamento != null) {
-             return ContaStatus.PAGO;
+            if (pagamento.isAfter(hoje)) {
+                // Novo Status: A transação já tem data, mas ainda não ocorreu.
+                return ContaStatus.AGENDADO;
+            } else {
+                // Data passada ou hoje: PAGO/RECEBIDO
+                return (tipo == ContaTipo.DESPESA) ? ContaStatus.PAGO : ContaStatus.RECEBIDO;
+            }
         }
 
-        // Regra 3: Sem pagamento → verificar vencimento
         if (prevista.isBefore(hoje)) {
-             return ContaStatus.ATRASADO;
-        } else {
-            return ContaStatus.PENDENTE;
+            return ContaStatus.ATRASADO;
         }
+        return ContaStatus.PENDENTE;
     }
 }

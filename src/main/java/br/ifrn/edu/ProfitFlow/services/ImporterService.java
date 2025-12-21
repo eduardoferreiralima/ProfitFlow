@@ -7,12 +7,22 @@ import br.ifrn.edu.ProfitFlow.file.importer.contract.FileImporter;
 import br.ifrn.edu.ProfitFlow.file.importer.factory.FileImporterFactory;
 import br.ifrn.edu.ProfitFlow.mapper.MapperRegistroFinanceiro;
 import br.ifrn.edu.ProfitFlow.models.enums.ContaStatus;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.coyote.BadRequestException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.annotation.processing.FilerException;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
@@ -34,16 +44,58 @@ public class ImporterService {
     @Autowired
     private FileImporterFactory importer;
 
-    public ResponseEntity<?> getTemplate(){
-        return ResponseEntity.ok().build();
-    }
+    public byte[] getTemplate() throws Exception {
 
-    public ResponseEntity<?> getImports(){
-        return ResponseEntity.ok().build();
-    }
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
 
-    public ResponseEntity<?> getImports(String id){
-        return ResponseEntity.ok().build();
+            XSSFSheet sheet = workbook.createSheet("Modelo Importação");
+
+            // Criar cabeçalho
+            Row header = sheet.createRow(0);
+
+            String[] columns = {
+                    "Tipo de Lançamento",
+                    "Valor",
+                    "Forma de Pagamento",
+                    "Categoria",
+                    "Nome/Razão Social",
+                    "CPF/CNPJ",
+                    "Data Prevista",
+                    "Data Pagamento"
+            };
+
+            for (int i = 0; i < columns.length; i++) {
+                Cell cell = header.createCell(i);
+                cell.setCellValue(columns[i]);
+            }
+
+            // Auto size
+            for (int i = 0; i < columns.length; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+            // Criar uma linha de exemplo (opcional)
+            Row exampleRow = sheet.createRow(1);
+            exampleRow.createCell(0).setCellValue("RECEITA");
+            exampleRow.createCell(1).setCellValue("1500.00");
+            exampleRow.createCell(2).setCellValue("PIX");
+            exampleRow.createCell(3).setCellValue("Vendas");
+            exampleRow.createCell(4).setCellValue("João Silva");
+            exampleRow.createCell(5).setCellValue("12345678900");
+            exampleRow.createCell(6).setCellValue("10/02/2025");
+            exampleRow.createCell(7).setCellValue("11/02/2025");
+
+            // Converter para array de bytes
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            workbook.write(out);
+            byte[] bytes = out.toByteArray();
+
+
+            return bytes;
+
+        } catch (Exception e) {
+            throw new FileNotFoundException("Erro ao gerar o arquivo" + e); //substituir por excessão personalizada
+        }
     }
 
     @Transactional

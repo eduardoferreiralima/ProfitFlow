@@ -4,7 +4,6 @@ import br.ifrn.edu.ProfitFlow.models.enums.ContaStatus;
 import br.ifrn.edu.ProfitFlow.models.enums.ContaTipo;
 import br.ifrn.edu.ProfitFlow.models.enums.FormaPagamento;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.PastOrPresent;
 import lombok.Getter;
 import lombok.Setter;
 import java.math.BigDecimal;
