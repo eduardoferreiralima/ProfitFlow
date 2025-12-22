@@ -84,20 +84,6 @@ public class XlsxImporter implements FileImporter {
         return true; // todas as células obrigatórias têm valor
     }
 
-    private String getRawString(Row row, int index) {
-        Cell cell = row.getCell(index, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
-        if (cell == null) return "";
-
-        if (cell.getCellType() == CellType.NUMERIC) {
-            // Converte o número sem notação científica
-            return BigDecimal.valueOf(cell.getNumericCellValue())
-                    .toPlainString()
-                    .replace(".0", ""); // remove decimal se aparecer
-        }
-
-        return formatter.formatCellValue(cell);
-    }
-
     private String getString(Row row, int index) {
         Cell cell = row.getCell(index, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
 
@@ -105,25 +91,6 @@ public class XlsxImporter implements FileImporter {
             return ""; // Retorna vazio sem estourar exceção
         }
         return formatter.formatCellValue(cell);
-    }
-
-    private Float parseFloat(Row row, int index) {
-        String value = getString(row, index);
-        if (value == null || value.isBlank()) return null;
-        value = value.replace(",", ".");  // caso venha com vírgula
-        return Float.parseFloat(value);
-    }
-
-    private Integer parseInt(Row row, int index) {
-        String value = getString(row, index);
-        if (value == null || value.isBlank()) return null;
-
-        // em muitos Excel, números inteiros vêm como "12.0"
-        if (value.contains(".")) {
-            value = value.substring(0, value.indexOf("."));
-        }
-
-        return Integer.parseInt(value);
     }
 
     private LocalDate parseDate(Row row, int index) {

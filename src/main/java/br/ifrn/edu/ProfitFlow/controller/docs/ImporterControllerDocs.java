@@ -23,7 +23,7 @@ public interface ImporterControllerDocs {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Template retornado com sucesso")
     })
-    ResponseEntity<?> getTemplate();
+    ResponseEntity<?> getTemplate() throws Exception;
 
 
     @Operation(

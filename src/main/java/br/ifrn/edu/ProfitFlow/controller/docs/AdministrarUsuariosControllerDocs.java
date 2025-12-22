@@ -63,10 +63,10 @@ public interface AdministrarUsuariosControllerDocs {
     ResponseEntity<List<ResponsePessoaDTO>> findByNome(
             @Parameter(description = "Nome, CPF ou CNPJ a ser buscado", example = "João") String nome);
 
-    @Operation(summary = "Lista pessoas por tipo", description = "Retorna todas as pessoas de um tipo específico (CLIENTE ou FORNECEDOR).")
+    @Operation(summary = "Busca um Usuário por CPF ou CNPJ", description = "Retorna um Usuário por CPF ou CNPJ")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Lista filtrada por tipo retornada")
+            @ApiResponse(responseCode = "200", description = "Usuario Retornado")
     })
     ResponseEntity<ResponsePessoaDTO> findByCpfOrCnpj(
-            @Parameter(description = "Tipo da pessoa (CLIENTE ou FORNECEDOR)", example = "123.456.789.11") String cpfCnpj);
+            @Parameter(description = "Busca um Usuário por CPF ou CNPJ", example = "43.940.349/0001-16") String cpfCnpj);
 }

@@ -7,16 +7,28 @@ import br.ifrn.edu.ProfitFlow.file.importer.contract.FileImporter;
 import br.ifrn.edu.ProfitFlow.file.importer.factory.FileImporterFactory;
 import br.ifrn.edu.ProfitFlow.mapper.MapperRegistroFinanceiro;
 import br.ifrn.edu.ProfitFlow.models.enums.ContaStatus;
+import net.datafaker.Faker;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.coyote.BadRequestException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.annotation.processing.FilerException;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -34,16 +46,73 @@ public class ImporterService {
     @Autowired
     private FileImporterFactory importer;
 
-    public ResponseEntity<?> getTemplate(){
-        return ResponseEntity.ok().build();
-    }
+    public byte[] getTemplate() throws Exception {
 
-    public ResponseEntity<?> getImports(){
-        return ResponseEntity.ok().build();
-    }
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
 
-    public ResponseEntity<?> getImports(String id){
-        return ResponseEntity.ok().build();
+            XSSFSheet sheet = workbook.createSheet("Modelo Importação");
+
+            // Criar cabeçalho
+            Row header = sheet.createRow(0);
+
+            String[] columns = {
+                    "Tipo de Lançamento",
+                    "Valor",
+                    "Forma de Pagamento",
+                    "Categoria",
+                    "Nome/Razão Social",
+                    "CPF/CNPJ",
+                    "Data Prevista",
+                    "Data Pagamento"
+            };
+
+            for (int i = 0; i < columns.length; i++) {
+                Cell cell = header.createCell(i);
+                cell.setCellValue(columns[i]);
+            }
+
+            // Auto size
+            for (int i = 0; i < columns.length; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+            Faker faker = new Faker(new Locale("pt-BR"));
+            String cpf = faker.cpf().valid();
+            String cnpj = faker.cnpj().valid();
+            String nome  = faker.name().fullName();
+            String nome2  = faker.company().name();
+
+            // Criar uma linha de exemplo (opcional)
+            Row exampleRow = sheet.createRow(1);
+            exampleRow.createCell(0).setCellValue("RECEITA");
+            exampleRow.createCell(1).setCellValue("1500.00");
+            exampleRow.createCell(2).setCellValue("PIX");
+            exampleRow.createCell(3).setCellValue("Vendas");
+            exampleRow.createCell(4).setCellValue(nome);
+            exampleRow.createCell(5).setCellValue(cpf);
+            exampleRow.createCell(6).setCellValue("10/02/2025");
+            exampleRow.createCell(7).setCellValue("11/02/2025");
+            // Criar uma linha de exemplo (opcional)
+            Row exampleRow2 = sheet.createRow(2);
+            exampleRow2.createCell(0).setCellValue("DESPESA");
+            exampleRow2.createCell(1).setCellValue("1200.00");
+            exampleRow2.createCell(2).setCellValue("TRANSFERENCIA");
+            exampleRow2.createCell(3).setCellValue("Aluguel");
+            exampleRow2.createCell(4).setCellValue(nome2);
+            exampleRow2.createCell(5).setCellValue(cnpj);
+            exampleRow2.createCell(6).setCellValue("12/02/2025");
+            exampleRow2.createCell(7).setCellValue("15/02/2025");
+            // Converter para array de bytes
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            workbook.write(out);
+            byte[] bytes = out.toByteArray();
+
+
+            return bytes;
+
+        } catch (Exception e) {
+            throw new FileNotFoundException("Erro ao gerar o arquivo" + e); //substituir por excessão personalizada
+        }
     }
 
     @Transactional

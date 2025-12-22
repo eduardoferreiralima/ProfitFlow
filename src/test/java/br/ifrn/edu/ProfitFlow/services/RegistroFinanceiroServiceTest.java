@@ -16,10 +16,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.ActiveProfiles;
-
 import java.time.LocalDate;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -45,7 +43,6 @@ class RegistroFinanceiroServiceTest {
 
     @Test
     void testCreateRegistroFinanceiro_Sucesso() throws Exception {
-        // Arrange
         RequestRegistroFinanceiroDTO dto = new RequestRegistroFinanceiroDTO();
         dto.setPessoaId(1L);
 
@@ -61,12 +58,7 @@ class RegistroFinanceiroServiceTest {
         when(registroFinanceiroRepository.save(registro)).thenReturn(registroSalvo);
         when(mapper.mapRegistroFinanceiroToResponseRegistroFinanceiroDTO(registroSalvo)).thenReturn(response);
         dto.setDataPrevista(LocalDate.now());
-
-
-        // Act
         ResponseRegistroFinanceiroDTO result = service.createRegistroFinanceiro(dto);
-
-        // Assert
         assertNotNull(result);
         verify(registroFinanceiroRepository).save(registro);
     }
@@ -106,9 +98,10 @@ class RegistroFinanceiroServiceTest {
     @Test
     void testDeleteRegistroFinanceiro() {
         Long id = 10L;
-
+        RegistroFinanceiro registro = new RegistroFinanceiro();
+        registro.setId(id);
+        when(registroFinanceiroRepository.findById(id)).thenReturn(Optional.of(registro));
         service.deleteRegistroFinanceiro(id);
-
         verify(registroFinanceiroRepository).deleteById(id);
     }
 }

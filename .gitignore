@@ -12,13 +12,13 @@ target/
 .settings
 .springBeans
 .sts4-cache
-commit_message.py
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
 *.iml
 *.ipr
-Aprendizado.md
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+#Arquivos e pastas Locais criadas pelo Desenvolvedor (Eu)
+Aprendizado.md
+commit_message.py

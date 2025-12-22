@@ -8,11 +8,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@EntityListeners(AuditingEntityListener.class)
 @Getter @Setter
 public abstract class Usuario {
     @Id
@@ -34,11 +37,14 @@ public abstract class Usuario {
     private String endereco;
 
     @Enumerated(EnumType.STRING)
-    private UsuarioRole role;
+    private UsuarioRole role = UsuarioRole.USUARIO;
 
     private boolean ativo;
 
+    @CreatedDate
     private LocalDateTime dataCadastro;
+
+    @LastModifiedDate
     private LocalDateTime dataAtualizacao;
 
 }
