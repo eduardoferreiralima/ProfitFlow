@@ -1,5 +1,5 @@
 server:
-  port: ${SPRING_SERVER_PORT}
+  port: 8888
   error:
     include-message: always
     include-binding-errors: always
@@ -28,7 +28,7 @@ springdoc:
   swagger-ui:
     path: /api/docs
     url: /v3/api-docs
-    server-url: http://localhost:${SPRING_SERVER_PORT}
+    server-url: http://localhost:8888
 
 cors:
   allowed-origins: "*"
