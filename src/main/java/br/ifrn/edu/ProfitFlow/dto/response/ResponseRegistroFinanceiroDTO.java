@@ -45,8 +45,5 @@ public class ResponseRegistroFinanceiroDTO {
             example = "11/25/2025",
             nullable = true)
     private LocalDate dataPagamento;
-
-    @Schema(description = "Informações da pessoa associada a este registro financeiro")
-    private Usuario pessoa;
 }
 

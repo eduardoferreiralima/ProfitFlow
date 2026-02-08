@@ -44,7 +44,6 @@ class RegistroFinanceiroServiceTest {
     @Test
     void testCreateRegistroFinanceiro_Sucesso() throws Exception {
         RequestRegistroFinanceiroDTO dto = new RequestRegistroFinanceiroDTO();
-        dto.setPessoaId(1L);
 
         Usuario usuario = new PessoaFisica();
         usuario.setId(1L);
@@ -58,7 +57,7 @@ class RegistroFinanceiroServiceTest {
         when(registroFinanceiroRepository.save(registro)).thenReturn(registroSalvo);
         when(mapper.mapRegistroFinanceiroToResponseRegistroFinanceiroDTO(registroSalvo)).thenReturn(response);
         dto.setDataPrevista(LocalDate.now());
-        ResponseRegistroFinanceiroDTO result = service.createRegistroFinanceiro(dto);
+        ResponseRegistroFinanceiroDTO result = service.createRegistroFinanceiro(dto, usuario.getId());
         assertNotNull(result);
         verify(registroFinanceiroRepository).save(registro);
     }
@@ -66,11 +65,10 @@ class RegistroFinanceiroServiceTest {
     @Test
     void testCreateRegistroFinanceiro_UsuarioNaoEncontrado() {
         RequestRegistroFinanceiroDTO dto = new RequestRegistroFinanceiroDTO();
-        dto.setPessoaId(99L);
 
         when(usuarioRepository.findById(99L)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> service.createRegistroFinanceiro(dto));
+        assertThrows(EntityNotFoundException.class, () -> service.createRegistroFinanceiro(dto, 99L));
     }
 
     @Test
@@ -80,7 +78,7 @@ class RegistroFinanceiroServiceTest {
 
         when(registroFinanceiroRepository.findById(1L)).thenReturn(Optional.of(registro));
 
-        boolean result = service.updateQuitar(1L);
+        boolean result = service.updateQuitar(1L, 1L);
 
         assertTrue(result);
         assertEquals(ContaStatus.PAGO, registro.getStatus());
@@ -92,7 +90,7 @@ class RegistroFinanceiroServiceTest {
     void testUpdateQuitar_RegistroNaoEncontrado() {
         when(registroFinanceiroRepository.findById(77L)).thenReturn(Optional.empty());
 
-        assertThrows(Exception.class, () -> service.updateQuitar(77L));
+        assertThrows(Exception.class, () -> service.updateQuitar(77L, 1L));
     }
 
     @Test
@@ -101,7 +99,7 @@ class RegistroFinanceiroServiceTest {
         RegistroFinanceiro registro = new RegistroFinanceiro();
         registro.setId(id);
         when(registroFinanceiroRepository.findById(id)).thenReturn(Optional.of(registro));
-        service.deleteRegistroFinanceiro(id);
+        service.deleteRegistroFinanceiro(id, 1L);
         verify(registroFinanceiroRepository).deleteById(id);
     }
 }

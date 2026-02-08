@@ -140,8 +140,7 @@ public class ImporterService {
     public void processImporterDTO(ImporterDTO importerDTO) throws Exception {
         ResponsePessoaDTO responsePessoaDTO = usuarioService.getResponsePessoaDTOWithImporterDTO(importerDTO);
         RequestRegistroFinanceiroDTO registroDTO = mapperRegistroFinanceiro.mapImporterToRequestRegistroFinanceiroDTO(importerDTO);
-        registroDTO.setPessoaId(responsePessoaDTO.getId());
-        registroFinanceiroService.createRegistroFinanceiro(registroDTO);
+        registroFinanceiroService.createRegistroFinanceiro(registroDTO, responsePessoaDTO.getId());
     }
 
 

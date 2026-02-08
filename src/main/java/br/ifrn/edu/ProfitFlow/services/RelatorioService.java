@@ -7,6 +7,7 @@ import br.ifrn.edu.ProfitFlow.models.enums.ContaStatus;
 import br.ifrn.edu.ProfitFlow.models.enums.ContaTipo;
 import br.ifrn.edu.ProfitFlow.repository.RegistroFinanceiroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,31 +19,32 @@ public class RelatorioService {
     @Autowired
     private RegistroFinanceiroRepository repository;
 
-    public List<FluxoCaixaDTO> obterFluxoCaixa(LocalDate inicio, LocalDate fim) {
-        return repository.gerarFluxoCaixa(inicio, fim);
+    @Cacheable(value = "fluxoCaixa", key = "#usuarioId +  #inicio.toString() + '-' + #fim.toString()")
+    public List<FluxoCaixaDTO> obterFluxoCaixa(LocalDate inicio, LocalDate fim, Long usuarioId) {
+        return repository.gerarFluxoCaixa(inicio, fim, usuarioId);
     }
 
-    public BalancoMensalDTO obterBalancoMensal(LocalDate dataReferencia) {
+    @Cacheable(value = "balancoMensal", key = "#usuarioId + '-' + #dataReferencia.toString()")
+    public BalancoMensalDTO obterBalancoMensal(LocalDate dataReferencia, Long usuarioId) {
         LocalDate inicio = dataReferencia.withDayOfMonth(1);
         LocalDate fim = dataReferencia.withDayOfMonth(dataReferencia.lengthOfMonth());
 
-        BigDecimal receitas = repository.sumValorByTipoAndData(ContaTipo.RECEITA, inicio, fim);
-        BigDecimal despesas = repository.sumValorByTipoAndData(ContaTipo.DESPESA, inicio, fim);
+        BigDecimal receitas = repository.sumValorByTipoAndData(ContaTipo.RECEITA, inicio, fim, usuarioId);
+        BigDecimal despesas = repository.sumValorByTipoAndData(ContaTipo.DESPESA, inicio, fim, usuarioId);
 
-        // Tratamento de segurança para evitar NullPointerException
         receitas = (receitas != null) ? receitas : BigDecimal.ZERO;
         despesas = (despesas != null) ? despesas : BigDecimal.ZERO;
 
         return new BalancoMensalDTO(receitas, despesas, receitas.subtract(despesas));
     }
 
-    public SituacaoFinanceiraDTO obterSituacaoFinanceira() {
-        BigDecimal saldoAtual = repository.calcularSaldoAteHoje(LocalDate.now(), ContaStatus.PAGO);
-        BigDecimal aReceber = repository.sumValorByTipoAndStatus(ContaTipo.RECEITA, ContaStatus.PENDENTE);
+    @Cacheable(value = "situacaoFinanceira", key = "#usuarioId")
+    public SituacaoFinanceiraDTO obterSituacaoFinanceira(Long usuarioId) {
+        BigDecimal saldoAtual = repository.calcularSaldoAteHoje(LocalDate.now(), ContaStatus.PAGO, usuarioId);
+        BigDecimal aReceber = repository.sumValorByTipoAndStatus(ContaTipo.RECEITA, ContaStatus.PENDENTE, usuarioId);
 
-        // Somando pendentes e atrasados para as despesas
-        BigDecimal aPagarPendente = repository.sumValorByTipoAndStatus(ContaTipo.DESPESA, ContaStatus.PENDENTE);
-        BigDecimal aPagarAtrasado = repository.sumValorByTipoAndStatus(ContaTipo.DESPESA, ContaStatus.ATRASADO);
+        BigDecimal aPagarPendente = repository.sumValorByTipoAndStatus(ContaTipo.DESPESA, ContaStatus.PENDENTE, usuarioId);
+        BigDecimal aPagarAtrasado = repository.sumValorByTipoAndStatus(ContaTipo.DESPESA, ContaStatus.ATRASADO, usuarioId);
 
         return new SituacaoFinanceiraDTO(
                 (saldoAtual != null) ? saldoAtual : BigDecimal.ZERO,

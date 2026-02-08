@@ -29,14 +29,6 @@ public interface AdministrarUsuariosControllerDocs {
     ResponseEntity<ResponsePessoaDTO> findById(
             @Parameter(description = "ID da pessoa", example = "1") Long id);
 
-    @Operation(summary = "Cadastra uma nova pessoa", description = "Cria um novo cliente ou fornecedor no sistema.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Pessoa criada com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos")
-    })
-    ResponseEntity<ResponsePessoaDTO> createUser(
-            @Parameter(description = "Dados da pessoa a ser cadastrada") RequestPessoaDTO request) throws Exception;
-
     @Operation(summary = "Atualiza uma pessoa", description = "Atualiza os dados de uma pessoa existente.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Pessoa atualizada com sucesso"),

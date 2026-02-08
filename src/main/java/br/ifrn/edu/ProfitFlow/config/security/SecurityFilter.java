@@ -1,4 +1,4 @@
-package br.ifrn.edu.ProfitFlow.config;
+package br.ifrn.edu.ProfitFlow.config.security;
 
 import br.ifrn.edu.ProfitFlow.repository.UsuarioRepository;
 import br.ifrn.edu.ProfitFlow.services.TokenService;

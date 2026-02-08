@@ -1,6 +1,8 @@
 package br.ifrn.edu.ProfitFlow.controller.docs;
 
 import br.ifrn.edu.ProfitFlow.dto.AuthDataDTO;
+import br.ifrn.edu.ProfitFlow.dto.request.RequestPessoaDTO;
+import br.ifrn.edu.ProfitFlow.dto.response.ResponsePessoaDTO;
 import br.ifrn.edu.ProfitFlow.models.Usuario;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -36,5 +38,13 @@ public interface AuthControllerDocs {
             @ApiResponse(responseCode = "200", description = "Logout realizado com sucesso")
     })
     ResponseEntity<?> logout();
+
+    @Operation(summary = "Cadastra uma nova pessoa", description = "Cria um novo cliente ou fornecedor no sistema.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Pessoa criada com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    })
+    ResponseEntity<ResponsePessoaDTO> createUser(
+            @Parameter(description = "Dados da pessoa a ser cadastrada") RequestPessoaDTO request) throws Exception;
 
 }

@@ -1,9 +1,8 @@
-package br.ifrn.edu.ProfitFlow.config;
+package br.ifrn.edu.ProfitFlow.config.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -38,7 +37,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .requestMatchers("/api/docs/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/usuarios/cadastrar").permitAll()
                         .requestMatchers("/api/swagger-ui/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);

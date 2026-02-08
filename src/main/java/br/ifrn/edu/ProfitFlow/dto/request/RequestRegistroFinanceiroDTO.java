@@ -46,11 +46,6 @@ public class RequestRegistroFinanceiroDTO {
     @PastOrPresent(message = "A data de pagamento não pode ser uma data futura")
     private LocalDate dataPagamento;
 
-    @Schema(description = "ID da pessoa associada ao registro financeiro",
-            example = "12")
-    @NotNull(message = "O ID da pessoa é obrigatório")
-    private Long pessoaId;
-
     @Schema(description = "Forma de pagamento utilizada",
             example = "PIX")
     @NotNull(message = "A forma de pagamento é obrigatória")

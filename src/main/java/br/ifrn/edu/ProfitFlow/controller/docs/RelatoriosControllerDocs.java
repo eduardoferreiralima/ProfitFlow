@@ -16,7 +16,7 @@ import java.util.List;
 @Tag(name = "Relatorios", description = "Operações relacionadas a relatórios financeiros")
 public interface RelatoriosControllerDocs {
 
-    @Operation(summary = "Esta consulta consolida o Regime de Caixa. Registros com status PENDENTE ou ATRASADO são desconsiderados, garantindo que o relatório reflita apenas o dinheiro que efetivamente transitou pela conta do usuário no período selecionado.")
+    @Operation(summary = "Retorna uma lista do fluxo de caixa diário", description = "Esta consulta consolida o Regime de Caixa. Registros com status PENDENTE ou ATRASADO são desconsiderados, garantindo que o relatório reflita apenas o dinheiro que efetivamente transitou pela conta do usuário no período selecionado.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Fluxo de caixa retornado com sucesso"),
             @ApiResponse(responseCode = "204", description = "Não há transações no período informado")
@@ -32,7 +32,10 @@ public interface RelatoriosControllerDocs {
             @ApiResponse(responseCode = "200", description = "Balanço mensal retornado com sucesso"),
             @ApiResponse(responseCode = "204", description = "Não há dados para o mês/ano informado")
     })
-    ResponseEntity<?> getBalancoMensal(LocalDate data);
+    ResponseEntity<?> getBalancoMensal(
+            @Parameter(description = "Data", example = "2024-01-01", schema = @Schema(type = "string", format = "date"))
+            @RequestParam LocalDate data
+            );
 
     @Operation(summary = "Retorna o resumo geral da situação financeira")
     @ApiResponses({
