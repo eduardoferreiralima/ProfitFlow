@@ -1,5 +1,6 @@
 package br.ifrn.edu.ProfitFlow.controller;
 
+import br.ifrn.edu.ProfitFlow.config.security.AuthenticationProvider;
 import br.ifrn.edu.ProfitFlow.controller.docs.RegistroFinanceiroControllerDocs;
 import br.ifrn.edu.ProfitFlow.dto.request.RequestRegistroFinanceiroDTO;
 import br.ifrn.edu.ProfitFlow.dto.response.ResponseRegistroFinanceiroDTO;
@@ -20,53 +21,56 @@ import java.util.List;
 public class RegistroFinanceiroController implements RegistroFinanceiroControllerDocs {
 
     @Autowired
+    AuthenticationProvider authenticationProvider;
+
+    @Autowired
     private RegistroFinanceiroService registroFinanceiroService;
 
     @GetMapping
     public ResponseEntity<List<ResponseRegistroFinanceiroDTO>> getRegistroFinanceiro(){
-        return ResponseEntity.ok(registroFinanceiroService.getRegistroFinanceiro());
+        return ResponseEntity.ok(registroFinanceiroService.getRegistroFinanceiro(authenticationProvider.getUsuarioId()));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ResponseRegistroFinanceiroDTO> getRegistroFinanceiro(@PathVariable Long id) throws Exception {
-        return ResponseEntity.ok(registroFinanceiroService.getRegistroFinanceiroPorId(id));
+        return ResponseEntity.ok(registroFinanceiroService.getRegistroFinanceiroPorId(id, authenticationProvider.getUsuarioId()));
     }
 
     @PostMapping
     public ResponseEntity<ResponseRegistroFinanceiroDTO> createRegistroFinanceiro(@RequestBody RequestRegistroFinanceiroDTO rf) throws Exception {
-        return ResponseEntity.status(HttpStatus.CREATED).body(registroFinanceiroService.createRegistroFinanceiro(rf));
+        return ResponseEntity.status(HttpStatus.CREATED).body(registroFinanceiroService.createRegistroFinanceiro(rf, authenticationProvider.getUsuarioId()));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ResponseRegistroFinanceiroDTO> updateRegistroFinanceiro(@PathVariable Long id, @RequestBody RequestRegistroFinanceiroDTO rf) throws Exception {
-        return ResponseEntity.ok(registroFinanceiroService.updateRegistroFinanceiro(id, rf));
+        return ResponseEntity.ok(registroFinanceiroService.updateRegistroFinanceiro(id, rf, authenticationProvider.getUsuarioId()));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteRegistroFinanceiro(@PathVariable Long id){
-        registroFinanceiroService.deleteRegistroFinanceiro(id);
+        registroFinanceiroService.deleteRegistroFinanceiro(id, authenticationProvider.getUsuarioId());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping("/{id}/quitar")
     public ResponseEntity<?> updateQuitar(@PathVariable Long id) throws Exception {
-        registroFinanceiroService.updateQuitar(id);
+        registroFinanceiroService.updateQuitar(id, authenticationProvider.getUsuarioId());
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/categoria")
     public ResponseEntity<List<ResponseRegistroFinanceiroDTO>> getRegistroFinanceiroPorCategoria(String categoria){
-        return ResponseEntity.ok().body(registroFinanceiroService.getRegistroFinanceiroPorCategoria(categoria));
+        return ResponseEntity.ok().body(registroFinanceiroService.getRegistroFinanceiroPorCategoria(categoria, authenticationProvider.getUsuarioId()));
     }
 
     @GetMapping("/status")
     public ResponseEntity<List<ResponseRegistroFinanceiroDTO>> getRegistroFinanceiroPorStatus(@RequestParam ContaStatus status){
-        return ResponseEntity.ok().body(registroFinanceiroService.getPorStatus(status));
+        return ResponseEntity.ok().body(registroFinanceiroService.getPorStatus(status, authenticationProvider.getUsuarioId()));
     }
 
     @GetMapping("/tipo")
     public ResponseEntity<List<ResponseRegistroFinanceiroDTO>> getRegistroFinanceiroPorTipo(@RequestParam ContaTipo tipo) throws BadRequestException {
-        return ResponseEntity.ok().body(registroFinanceiroService.getRegistroFinanceiroPorTipo(tipo));
+        return ResponseEntity.ok().body(registroFinanceiroService.getRegistroFinanceiroPorTipo(tipo, authenticationProvider.getUsuarioId()));
     }
 
     @GetMapping("/periodo")
@@ -74,6 +78,6 @@ public class RegistroFinanceiroController implements RegistroFinanceiroControlle
             @RequestParam @DateTimeFormat(pattern = "MM/dd/yyyy") LocalDate inicio,
             @RequestParam @DateTimeFormat(pattern = "MM/dd/yyyy") LocalDate fim
     ) {
-        return ResponseEntity.ok().body(registroFinanceiroService.getRegistroFinanceiroPorPeriodo(inicio, fim));
+        return ResponseEntity.ok().body(registroFinanceiroService.getRegistroFinanceiroPorPeriodo(inicio, fim, authenticationProvider.getUsuarioId()));
     }
 }

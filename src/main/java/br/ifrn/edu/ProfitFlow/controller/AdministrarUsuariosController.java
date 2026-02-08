@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/usuarios")
+@RequestMapping("/api/admin/usuarios")
 public class AdministrarUsuariosController implements AdministrarUsuariosControllerDocs {
 
     @Autowired
@@ -28,14 +28,14 @@ public class AdministrarUsuariosController implements AdministrarUsuariosControl
         return ResponseEntity.ok(usuarioService.findById(id));
     }
 
-    @PostMapping("/cadastrar")
-    public ResponseEntity<ResponsePessoaDTO> createUser(@Valid @RequestBody RequestPessoaDTO pessoaDTO) throws Exception {
-        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.createUser(pessoaDTO));
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<ResponsePessoaDTO> update(@PathVariable Long id, @RequestBody RequestPessoaDTO pessoaDTO){
         return ResponseEntity.ok(usuarioService.updateUser(id, pessoaDTO));
+    }
+
+    @PatchMapping("/setUserAdmin/{id}")
+    public ResponseEntity<?> setUserAdmin(@PathVariable Long id){
+        return ResponseEntity.ok(usuarioService.setUserAdmin(id));
     }
 
     @DeleteMapping("/{id}")

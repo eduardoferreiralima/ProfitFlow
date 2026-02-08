@@ -1,5 +1,6 @@
 package br.ifrn.edu.ProfitFlow.services;
 
+import br.ifrn.edu.ProfitFlow.config.security.AuthenticationProvider;
 import br.ifrn.edu.ProfitFlow.dto.ImporterDTO;
 import br.ifrn.edu.ProfitFlow.dto.request.RequestRegistroFinanceiroDTO;
 import br.ifrn.edu.ProfitFlow.dto.response.ResponsePessoaDTO;
@@ -42,6 +43,9 @@ public class ImporterService {
 
     @Autowired
     private RegistroFinanceiroService registroFinanceiroService;
+
+    @Autowired
+    AuthenticationProvider authenticationProvider;
 
     @Autowired
     private FileImporterFactory importer;
@@ -128,25 +132,14 @@ public class ImporterService {
             List<ImporterDTO> dataImporter = importer.importFile(inputStream).stream().toList();
 
             for (ImporterDTO importerDTO : dataImporter){
-                processImporterDTO(importerDTO);
-            };
-
+                registroFinanceiroService.createRegistroFinanceiro(
+                        mapperRegistroFinanceiro.mapImporterToRequestRegistroFinanceiroDTO(importerDTO),
+                        authenticationProvider.getUsuarioId()
+                );
+            }
             return dataImporter;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public void processImporterDTO(ImporterDTO importerDTO) throws Exception {
-        ResponsePessoaDTO responsePessoaDTO = usuarioService.getResponsePessoaDTOWithImporterDTO(importerDTO);
-        RequestRegistroFinanceiroDTO registroDTO = mapperRegistroFinanceiro.mapImporterToRequestRegistroFinanceiroDTO(importerDTO);
-        registroDTO.setPessoaId(responsePessoaDTO.getId());
-        registroFinanceiroService.createRegistroFinanceiro(registroDTO);
-    }
-
-
-
-    public ResponseEntity<?> deleteFile(String id) {
-        return ResponseEntity.ok().build();
     }
 }

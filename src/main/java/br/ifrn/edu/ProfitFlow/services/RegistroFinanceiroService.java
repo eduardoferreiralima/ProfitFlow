@@ -2,6 +2,7 @@ package br.ifrn.edu.ProfitFlow.services;
 
 import br.ifrn.edu.ProfitFlow.dto.request.RequestRegistroFinanceiroDTO;
 import br.ifrn.edu.ProfitFlow.dto.response.ResponseRegistroFinanceiroDTO;
+import br.ifrn.edu.ProfitFlow.exception.BusinessRuleException;
 import br.ifrn.edu.ProfitFlow.mapper.MapperRegistroFinanceiro;
 import br.ifrn.edu.ProfitFlow.models.RegistroFinanceiro;
 import br.ifrn.edu.ProfitFlow.models.Usuario;
@@ -12,10 +13,11 @@ import br.ifrn.edu.ProfitFlow.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,80 +34,90 @@ public class RegistroFinanceiroService {
     private MapperRegistroFinanceiro mapper;
 
 
-    public List<ResponseRegistroFinanceiroDTO> getRegistroFinanceiro() {
-
-        List<RegistroFinanceiro> rfEntities = registroFinanceiroRepository.findAll();
-        List<ResponseRegistroFinanceiroDTO> registroDTO = new ArrayList<>();
-
-        registroDTO = mapper.toResponseRegistroFinanceiroDTOList(rfEntities);
-
+    @Cacheable(value = "getAllRF", key = "#usuarioId")
+    public List<ResponseRegistroFinanceiroDTO> getRegistroFinanceiro(Long usuarioId) {
+        List<RegistroFinanceiro> rfEntities = registroFinanceiroRepository.findByPessoaId(usuarioId);
+        List<ResponseRegistroFinanceiroDTO> registroDTO = mapper.toResponseRegistroFinanceiroDTOList(rfEntities);
         return registroDTO;
     }
 
-    public ResponseRegistroFinanceiroDTO getRegistroFinanceiroPorId(Long id) throws EntityNotFoundException {
+    @Cacheable(value = "getRFById", key = "#usuarioId + '-' + #id")
+    public ResponseRegistroFinanceiroDTO getRegistroFinanceiroPorId(Long id, Long usuarioId) throws EntityNotFoundException {
         RegistroFinanceiro registroFinanceiro = registroFinanceiroRepository.findById(id)
                 .orElseThrow(()-> new EntityNotFoundException("RegistroFinanceiro não encontrada"));
-
-        ResponseRegistroFinanceiroDTO registroDTO = mapper.mapRegistroFinanceiroToResponseRegistroFinanceiroDTO(registroFinanceiro);
-
-        return registroDTO;
+        if (registroFinanceiro.getPessoa().getId().equals(usuarioId)) {
+            ResponseRegistroFinanceiroDTO registroDTO = mapper.mapRegistroFinanceiroToResponseRegistroFinanceiroDTO(registroFinanceiro);
+            return registroDTO;
+        } else throw new BusinessRuleException("Não é possível acessar os dados financeiros de outro usuário!");
     }
 
     @Transactional
-    public ResponseRegistroFinanceiroDTO createRegistroFinanceiro(RequestRegistroFinanceiroDTO registroDTO) throws EntityNotFoundException {
-        Usuario user = usuarioRepository.findById(registroDTO.getPessoaId())
+    @CacheEvict(value = {"getAllRF", "getRFById", "getRFByTipo", "getRFByCategoria", "getRFByPeriodo", "fluxoCaixa", "balancoMensal", "situacaoFinanceira"}, allEntries = true)
+    public ResponseRegistroFinanceiroDTO createRegistroFinanceiro(RequestRegistroFinanceiroDTO registroDTO, Long usuarioId) throws EntityNotFoundException {
+        Usuario user = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Cliente ou Fornecedor não encontrado com ID: " + registroDTO.getPessoaId()
+                        "Cliente ou Fornecedor não encontrado com ID: " + usuarioId
                 ));
         RegistroFinanceiro registroFinanceiro = mapper.mapRegistroFinanceiroDtoToRegistroFinanceiro(registroDTO);
         registroFinanceiro.setPessoa(user);
         registroFinanceiro.setStatus(definirStatusPagamento(registroDTO.getDataPagamento(), registroDTO.getDataPrevista(), registroDTO.getTipo()));
         registroFinanceiro = registroFinanceiroRepository.save(registroFinanceiro);
         ResponseRegistroFinanceiroDTO rfResponse = mapper.mapRegistroFinanceiroToResponseRegistroFinanceiroDTO(registroFinanceiro);
-        rfResponse.setPessoa(user);
         return rfResponse;
     }
 
     @Transactional
-    public ResponseRegistroFinanceiroDTO updateRegistroFinanceiro(Long id, RequestRegistroFinanceiroDTO registroDTO) throws EntityNotFoundException {
+    @CacheEvict(value = {"getAllRF", "getRFById", "getRFByTipo", "getRFByCategoria", "getRFByPeriodo", "fluxoCaixa", "balancoMensal", "situacaoFinanceira"}, allEntries = true)
+    public ResponseRegistroFinanceiroDTO updateRegistroFinanceiro(Long id, RequestRegistroFinanceiroDTO registroDTO, Long usuarioId) throws EntityNotFoundException {
         RegistroFinanceiro registroFinanceiro = registroFinanceiroRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("RegistroFinanceiro não encontrada com ID: " + id));
-        mapper.updateRegistroFinanceiroFromDTO(registroDTO, registroFinanceiro);
-        registroFinanceiro.setStatus(definirStatusPagamento(registroDTO.getDataPagamento(), registroDTO.getDataPrevista(), registroDTO.getTipo()));
-        registroFinanceiro = registroFinanceiroRepository.save(registroFinanceiro);
-        ResponseRegistroFinanceiroDTO rfResponse = mapper.mapRegistroFinanceiroToResponseRegistroFinanceiroDTO(registroFinanceiro);
-        return rfResponse;
+        if (registroFinanceiro.getPessoa().getId().equals(usuarioId)) {
+            mapper.updateRegistroFinanceiroFromDTO(registroDTO, registroFinanceiro);
+            registroFinanceiro.setStatus(definirStatusPagamento(registroDTO.getDataPagamento(), registroDTO.getDataPrevista(), registroDTO.getTipo()));
+            registroFinanceiro = registroFinanceiroRepository.save(registroFinanceiro);
+            ResponseRegistroFinanceiroDTO rfResponse = mapper.mapRegistroFinanceiroToResponseRegistroFinanceiroDTO(registroFinanceiro);
+            return rfResponse;
+        }else throw new BusinessRuleException("Não é possível alterar um registro financeiro de outro usuário!");
     }
 
     @Transactional
-    public boolean updateQuitar(Long id) throws EntityNotFoundException {
+    @CacheEvict(value = {"getAllRF", "getRFById", "getRFByTipo", "getRFByCategoria", "getRFByPeriodo", "fluxoCaixa", "balancoMensal", "situacaoFinanceira"}, allEntries = true)
+    public boolean updateQuitar(Long id, Long usuarioId) throws EntityNotFoundException {
         RegistroFinanceiro registroFinanceiro = registroFinanceiroRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("RegistroFinanceiro com ID " + id + " não encontrada!"));
         if (registroFinanceiro.getDataPagamento() != null && registroFinanceiro.getStatus() == ContaStatus.PAGO) {
-            throw new RuntimeException("O Registro Financeiro já está !uitado! \n" + "Data do pagamento: " + registroFinanceiro.getDataPagamento());
+            throw new BusinessRuleException("O Registro Financeiro já está quitado! \n" + "Data do pagamento: " + registroFinanceiro.getDataPagamento());
         }
-        registroFinanceiro.setStatus(ContaStatus.PAGO);
-        registroFinanceiro.setDataPagamento(LocalDate.now());
-        registroFinanceiroRepository.save(registroFinanceiro);
-        return true;
+        if(registroFinanceiro.getPessoa().getId().equals(usuarioId)){
+            registroFinanceiro.setStatus(ContaStatus.PAGO);
+            registroFinanceiro.setDataPagamento(LocalDate.now());
+            registroFinanceiroRepository.save(registroFinanceiro);
+            return true;
+        }else throw new BusinessRuleException("Não é possível alterar um registro financeiro de outro usuário!");
+
     }
 
     @Transactional
-    public void deleteRegistroFinanceiro(Long id){
+    @CacheEvict(value = {"getAllRF", "getRFById", "getRFByTipo", "getRFByCategoria", "getRFByPeriodo", "fluxoCaixa", "balancoMensal", "situacaoFinanceira"}, allEntries = true)
+    public void deleteRegistroFinanceiro(Long id, Long usuarioId){
         RegistroFinanceiro registroFinanceiro = registroFinanceiroRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Registro não encontrado!"));
-        registroFinanceiroRepository.deleteById(id);
+        if (registroFinanceiro.getPessoa().getId().equals(usuarioId)) {
+            registroFinanceiroRepository.deleteById(id);
+        }else throw new BusinessRuleException("Não é possível deletar um registro financeiro de outro usuário!");
+
     }
 
-    public List<ResponseRegistroFinanceiroDTO> getPorStatus(ContaStatus contaStatus){
-        List<RegistroFinanceiro> registroFinanceiro = registroFinanceiroRepository.findByStatus(contaStatus);
+    public List<ResponseRegistroFinanceiroDTO> getPorStatus(ContaStatus contaStatus, Long usuarioId){
+        List<RegistroFinanceiro> registroFinanceiro = registroFinanceiroRepository.findByStatusAndPessoaId(contaStatus, usuarioId);
         return registroFinanceiro.stream()
                 .map(rf -> mapper.mapRegistroFinanceiroToResponseRegistroFinanceiroDTO(rf))
                 .collect(Collectors.toList());
     }
 
-    public List<ResponseRegistroFinanceiroDTO> getRegistroFinanceiroPorTipo(ContaTipo tipo) throws BadRequestException {
-        List<RegistroFinanceiro> registroFinanceiro = registroFinanceiroRepository.findByTipo(tipo);
+    @Cacheable(value = "getRFByTipo", key = "#usuarioId + '-' + #tipo")
+    public List<ResponseRegistroFinanceiroDTO> getRegistroFinanceiroPorTipo(ContaTipo tipo, Long usuarioId) throws BadRequestException {
+        List<RegistroFinanceiro> registroFinanceiro = registroFinanceiroRepository.findByTipoAndPessoaId(tipo, usuarioId);
         if (tipo != ContaTipo.RECEITA && tipo != ContaTipo.DESPESA) {
             throw new BadRequestException("O tipo " + tipo + " é inválido!\n"+"use RECEITA ou DESPESA");
         }
@@ -114,15 +126,17 @@ public class RegistroFinanceiroService {
                 .collect(Collectors.toList());
     }
 
-    public List<ResponseRegistroFinanceiroDTO> getRegistroFinanceiroPorCategoria(String categoria){
-        List<RegistroFinanceiro> registroFinanceiro = registroFinanceiroRepository.findByCategoria(categoria);
+    @Cacheable(value = "getRFByCategoria", key = "#usuarioId + '-' + #categoria")
+    public List<ResponseRegistroFinanceiroDTO> getRegistroFinanceiroPorCategoria(String categoria, Long usuarioId){
+        List<RegistroFinanceiro> registroFinanceiro = registroFinanceiroRepository.findByCategoriaAndPessoaId(categoria, usuarioId);
         return registroFinanceiro.stream()
                 .map(rf -> mapper.mapRegistroFinanceiroToResponseRegistroFinanceiroDTO(rf))
                 .collect(Collectors.toList());
     }
 
-    public List<ResponseRegistroFinanceiroDTO> getRegistroFinanceiroPorPeriodo(LocalDate inicio, LocalDate fim){
-        List<RegistroFinanceiro> registroFinanceiro = registroFinanceiroRepository.findByDataPagamentoBetween(inicio,fim);
+    @Cacheable(value = "getRFByPeriodo", key = "#usuarioId + '-' + #inicio.toString() + '-' + #fim.toString()")
+    public List<ResponseRegistroFinanceiroDTO> getRegistroFinanceiroPorPeriodo(LocalDate inicio, LocalDate fim, Long usuarioId){
+        List<RegistroFinanceiro> registroFinanceiro = registroFinanceiroRepository.findByDataPagamentoBetweenAndPessoaId(inicio,fim, usuarioId);
         return registroFinanceiro.stream()
                 .map(rf -> mapper.mapRegistroFinanceiroToResponseRegistroFinanceiroDTO(rf))
                 .collect(Collectors.toList());

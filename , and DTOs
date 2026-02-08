@@ -1069,7 +1069,7 @@
  [m
 [32m+[m[32mimport br.ifrn.edu.ProfitFlow.annotations.PhoneIsValid;[m
 [32m+[m[32mimport br.ifrn.edu.ProfitFlow.models.enums.PessoaTipo;[m
- import br.ifrn.edu.ProfitFlow.models.enums.UsuarioRole;[m
+ import br.ifrn.edu.ProfitFlow.models.enums.UserRole;[m
  import jakarta.persistence.*;[m
  import jakarta.validation.constraints.Email;[m
 [36m@@ -12,11 +14,12 @@[m [mimport lombok.Setter;[m
@@ -1273,7 +1273,7 @@
 [31m-import br.ifrn.edu.ProfitFlow.models.ClienteFornecedor;[m
 [31m-import br.ifrn.edu.ProfitFlow.models.Usuario;[m
 [31m-import br.ifrn.edu.ProfitFlow.models.enums.PessoaTipo;[m
-[31m-import br.ifrn.edu.ProfitFlow.models.enums.UsuarioRole;[m
+[31m-import br.ifrn.edu.ProfitFlow.models.enums.UserRole;[m
 [31m-import br.ifrn.edu.ProfitFlow.repository.ClienteFornecedorRepository;[m
 [31m-import br.ifrn.edu.ProfitFlow.repository.UsuarioRepository;[m
 [31m-import jakarta.transaction.Transactional;[m

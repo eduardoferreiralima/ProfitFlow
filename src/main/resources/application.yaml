@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8888
   error:
     include-message: always
     include-binding-errors: always
@@ -28,12 +28,20 @@ springdoc:
   swagger-ui:
     path: /api/docs
     url: /v3/api-docs
-    server-url: http://localhost:8080
+    server-url: http://localhost:8888
 
 cors:
   allowed-origins: "*"
-  allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+  allowed-methods: "GET,POST,PATCH,PUT,DELETE,OPTIONS"
 
 flyway:
   enabled: true
   locations: classpath:db/migration
+
+api:
+  security:
+    token:
+      secret: ${SPRING_SECURITY_SECRET}
+      issuer: ${SPRING_SECURITY_ISSUER}
+      expire-access-token: ${SPRING_SECURITY_EXPIRE_ACCESS_TOKEN}
+      expire-refresh-token: ${SPRING_SECURITY_EXPIRE_REFRESH_TOKEN}
