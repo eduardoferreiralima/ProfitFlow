@@ -2,6 +2,7 @@ package br.ifrn.edu.ProfitFlow.services;
 
 import br.ifrn.edu.ProfitFlow.dto.request.RequestRegistroFinanceiroDTO;
 import br.ifrn.edu.ProfitFlow.dto.response.ResponseRegistroFinanceiroDTO;
+import br.ifrn.edu.ProfitFlow.exception.BusinessRuleException;
 import br.ifrn.edu.ProfitFlow.mapper.MapperRegistroFinanceiro;
 import br.ifrn.edu.ProfitFlow.models.RegistroFinanceiro;
 import br.ifrn.edu.ProfitFlow.models.Usuario;
@@ -82,7 +83,7 @@ public class RegistroFinanceiroService {
         RegistroFinanceiro registroFinanceiro = registroFinanceiroRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("RegistroFinanceiro com ID " + id + " não encontrada!"));
         if (registroFinanceiro.getDataPagamento() != null && registroFinanceiro.getStatus() == ContaStatus.PAGO) {
-            throw new RuntimeException("O Registro Financeiro já está !uitado! \n" + "Data do pagamento: " + registroFinanceiro.getDataPagamento());
+            throw new BusinessRuleException("O Registro Financeiro já está quitado! \n" + "Data do pagamento: " + registroFinanceiro.getDataPagamento());
         }
         registroFinanceiro.setStatus(ContaStatus.PAGO);
         registroFinanceiro.setDataPagamento(LocalDate.now());
