@@ -8,6 +8,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +26,9 @@ public class TokenService {
     @Lazy
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private CacheManager cacheManager;
+
     @Value("${api.security.token.secret}")
     private String secret;
 
@@ -37,6 +41,13 @@ public class TokenService {
     @Value("${api.security.token.expire-refresh-token}")
     private Long expireRefreshToken;
 
+    public void logout(String token) {//OBS: da forma que está, só irá sair da lista ao reiniciar o servidor
+        String cleanToken = token.replace("Bearer ", "");
+        var blacklist = cacheManager.getCache("tokenBlacklist");
+        if (blacklist != null) {
+            blacklist.put(cleanToken, true);
+        }
+    }
 
     public DadosTokenJWT generateDataToken(AuthDataDTO data) {
         try {
@@ -91,6 +102,10 @@ public class TokenService {
     }
 
     public String validateToken(String token){
+        var blacklist = cacheManager.getCache("tokenBlacklist");
+        if (blacklist != null && blacklist.get(token) != null) {
+            return ""; // Token invalidado pelo logout
+        }
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.require(algorithm)

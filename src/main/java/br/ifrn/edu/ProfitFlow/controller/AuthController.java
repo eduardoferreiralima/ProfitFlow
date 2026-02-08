@@ -12,7 +12,9 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,6 +34,11 @@ public class AuthController implements AuthControllerDocs {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(){
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getDetails() instanceof String token) {
+            String cleanToken = token.replace("Bearer ", "");
+            tokenService.logout(cleanToken);
+        }
         return ResponseEntity.ok().build();
     }
 

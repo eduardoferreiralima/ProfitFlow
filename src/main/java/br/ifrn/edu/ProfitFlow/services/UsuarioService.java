@@ -7,6 +7,7 @@ import br.ifrn.edu.ProfitFlow.mapper.MapperUsuario;
 import br.ifrn.edu.ProfitFlow.models.PessoaFisica;
 import br.ifrn.edu.ProfitFlow.models.PessoaJuridica;
 import br.ifrn.edu.ProfitFlow.models.Usuario;
+import br.ifrn.edu.ProfitFlow.models.enums.UserRole;
 import br.ifrn.edu.ProfitFlow.repository.PessoaFisicaRepository;
 import br.ifrn.edu.ProfitFlow.repository.PessoaJuridicaRepository;
 import br.ifrn.edu.ProfitFlow.repository.UsuarioRepository;
@@ -157,5 +158,11 @@ public class UsuarioService {
         return responsePessoaDTO;
     }
 
+    public Object setUserAdmin(Long id) {
+        Usuario user = usuarioRepository.findById(id)
+                .orElseThrow(()->new EntityNotFoundException("usuário não encontrado!"));
+        user.setRole(UserRole.ADMIN);
+        return usuarioRepository.save(user);
+    }
 }
 

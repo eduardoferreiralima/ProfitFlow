@@ -33,6 +33,11 @@ public class AdministrarUsuariosController implements AdministrarUsuariosControl
         return ResponseEntity.ok(usuarioService.updateUser(id, pessoaDTO));
     }
 
+    @PatchMapping("/setUserAdmin/{id}")
+    public ResponseEntity<?> setUserAdmin(@PathVariable Long id){
+        return ResponseEntity.ok(usuarioService.setUserAdmin(id));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> delete(@PathVariable Long id){
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(usuarioService.delete(id));

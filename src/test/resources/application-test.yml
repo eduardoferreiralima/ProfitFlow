@@ -16,3 +16,12 @@ spring:
   h2:
     console:
       enabled: true
+
+
+api:
+  security:
+    token:
+      secret: secret-test
+      issuer: test-issuer
+      expire-access-token: 120
+      expire-refresh-token: 1440

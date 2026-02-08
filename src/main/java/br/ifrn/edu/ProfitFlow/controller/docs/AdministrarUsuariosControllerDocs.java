@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -38,6 +39,15 @@ public interface AdministrarUsuariosControllerDocs {
     ResponseEntity<ResponsePessoaDTO> update(
             @Parameter(description = "ID da pessoa a ser atualizada", example = "1") Long id,
             @Parameter(description = "Novos dados da pessoa") RequestPessoaDTO request);
+
+
+    @Operation(summary = "Atualiza uma pessoa para ADMIN", description = "Atualiza o ROLE de uma pessoa para admin")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Pessoa atualizada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Pessoa não encontrada")
+    })
+    public ResponseEntity<?> setUserAdmin(@Parameter(description = "ID da pessoa a ser atualizada", example = "1") Long id);
+
 
     @Operation(summary = "Remove uma pessoa", description = "Deleta uma pessoa do sistema pelo ID.")
     @ApiResponses({
