@@ -71,6 +71,7 @@ public class TokenService {
         return JWT.create()
                 .withIssuer(issuer)
                 .withSubject(usuario.getEmail())
+                .withClaim(usuario.getRole().toString(), true)
                 .withExpiresAt(dataExpiracao(expireRefreshToken))
                 .withClaim("type", "refresh")
                 .sign(algoritmo);
