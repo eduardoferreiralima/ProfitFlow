@@ -29,4 +29,6 @@ public class RequestPessoaDTO {
     @Schema(description = "Endereço completo da pessoa", example = "Rua das Flores, 123, Natal/RN")
     private String endereco;
 
+    private String senha;
+
 }

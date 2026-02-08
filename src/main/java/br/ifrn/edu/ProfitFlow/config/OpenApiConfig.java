@@ -1,10 +1,13 @@
 package br.ifrn.edu.ProfitFlow.config;
 
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
 import org.springframework.context.annotation.Bean;
@@ -45,8 +48,11 @@ public class OpenApiConfig {
                 )
                 .servers(List.of(
                         new Server()
-                                .url("http://localhost:8080")
-                                .description("Servidor Local de Desenvolvimento")
+                                .url("http://localhost:8888")
+                                .description("Servidor Local de Desenvolvimento"),
+                        new Server()
+                                .url("https://profitflow-profitflow.zgx7iz.easypanel.host")
+                                                .description("Servidor de Produção")
                 ))
                 .tags(List.of(
                         new Tag().name("Auth").description("Operações relacionadas a Autenticação"),
@@ -58,7 +64,15 @@ public class OpenApiConfig {
                 .externalDocs(new ExternalDocumentation()
                         .description("Documentação do Projeto")
                         .url("https://github.com/eduardoferreiralima/ProfitFlow")
-                );
+                )
+                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
+                .components(new Components()
+                        .addSecuritySchemes("bearerAuth",
+                                new SecurityScheme()
+                                        .name("bearerAuth")
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")));
     }
 
     @RestControllerAdvice // Esta anotação habilita o tratamento global de exceções

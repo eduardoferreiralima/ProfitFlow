@@ -1,8 +1,9 @@
 package br.ifrn.edu.ProfitFlow.controller;
 
-
 import br.ifrn.edu.ProfitFlow.controller.docs.AuthControllerDocs;
-import br.ifrn.edu.ProfitFlow.services.UsuarioService;
+import br.ifrn.edu.ProfitFlow.dto.AuthDataDTO;
+import br.ifrn.edu.ProfitFlow.services.TokenService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,12 +13,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthController implements AuthControllerDocs {
 
-
     @Autowired
-    private UsuarioService usuarioService;
+    private TokenService tokenService;
 
-
-    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam String email, @RequestParam String senha){
         return ResponseEntity.ok().build();
     }
@@ -37,5 +35,8 @@ public class AuthController implements AuthControllerDocs {
         return ResponseEntity.ok().build();
     }
 
-
+    @PostMapping("/login")
+    public ResponseEntity efetuarLogin(@RequestBody @Valid AuthDataDTO dados) {
+        return ResponseEntity.ok(tokenService.generateDataToken(dados));
+    }
 }

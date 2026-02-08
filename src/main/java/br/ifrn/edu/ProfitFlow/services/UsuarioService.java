@@ -12,6 +12,7 @@ import br.ifrn.edu.ProfitFlow.repository.PessoaJuridicaRepository;
 import br.ifrn.edu.ProfitFlow.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -23,6 +24,9 @@ public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     PessoaJuridicaRepository pessoaJuridicaRepository;
@@ -52,14 +56,14 @@ public class UsuarioService {
         ResponsePessoaDTO responsePessoaDTO = new ResponsePessoaDTO();
 
         if (isCnpj(pessoa.getCpfCnpj())){
-
             PessoaJuridica pj = mapper.toEntityPessoaJuridica(pessoa);
+            pj.setPassword(passwordEncoder.encode(pessoa.getSenha()));
             pj = pessoaJuridicaRepository.save(pj);
             responsePessoaDTO = mapper.mapPJtoResponsePessoaDTO(pj);
 
         } else if (isCpf(pessoa.getCpfCnpj())) {
-
             PessoaFisica pf = mapper.toEntityPessoaFisica(pessoa);
+            pf.setPassword(passwordEncoder.encode(pessoa.getSenha()));
             pf = pessoaFisicaRepository.save(pf);
             responsePessoaDTO = mapper.mapPFtoResponsePessoaDTO(pf);
 

@@ -1,6 +1,6 @@
 package br.ifrn.edu.ProfitFlow.dto.response;
 
-import br.ifrn.edu.ProfitFlow.models.enums.UsuarioRole;
+import br.ifrn.edu.ProfitFlow.models.enums.UserRole;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,7 +37,7 @@ public class ResponsePessoaDTO {
 
     @Schema(description = "Papel ou tipo de acesso do usuário no sistema",
             example = "ADMIN")
-    private UsuarioRole role;
+    private UserRole role;
 
     @Schema(description = "Indica se o usuário está ativo no sistema",
             example = "true")
